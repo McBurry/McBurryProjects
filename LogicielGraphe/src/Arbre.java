@@ -33,7 +33,7 @@ public class Arbre extends JPanel implements ActionListener{
 	}
 	
 	public void maj(){
-		removeAll();
+		removeAll();		
 		setLayout( new GridLayout(this.nombre,2,10,10) );
 		
 		System.out.println(this.nombre);
@@ -47,7 +47,7 @@ public class Arbre extends JPanel implements ActionListener{
 			this.alJButton.add(b);
 			b.addActionListener(this);
 			add( b );
-			add( new Label(this.alSommet.get(i).getNom()) );
+			add( new Label( String.format("%.5s", this.alSommet.get(i).getNom()) ) );
 		}
 		revalidate();
 	}

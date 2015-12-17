@@ -43,6 +43,7 @@ public class Sommet extends JPanel{
 	public void setPosition( int x, int y ){
 		this.x = x;
 		this.y = y;
+		
 		this.e = new Ellipse2D.Double( this.x, this.y, this.largeur, this.hauteur );
 	}
 	

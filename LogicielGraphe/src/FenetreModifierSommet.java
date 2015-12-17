@@ -90,8 +90,8 @@ public class FenetreModifierSommet extends JFrame implements ActionListener, Lis
 			//this.graphe.addSommet( new Sommet( this.tNom.getText(), Integer.parseInt(this.tX.getText()), Integer.parseInt(this.tY.getText()), Integer.parseInt(this.tWidth.getText()), Integer.parseInt(this.tHeight.getText()) ) );
 			Sommet s = this.graphe.getAlSommet().get( this.list.getSelectedIndex() );
 			s.setNom(this.tNom.getText());
-			s.setPosition( Integer.parseInt(this.tX.getText()), Integer.parseInt(this.tY.getText()) );
-			s.setSize( Integer.parseInt(this.tWidth.getText()), Integer.parseInt(this.tHeight.getText()) );
+			this.graphe.translate( this.list.getSelectedIndex(), Integer.parseInt(this.tX.getText()), Integer.parseInt(this.tY.getText()));
+			this.graphe.changeSize( this.list.getSelectedIndex(),Integer.parseInt(this.tWidth.getText()), Integer.parseInt(this.tHeight.getText()) );
 			this.graphe.repaint();
 			System.out.println("Lol");
 			this.dispose();

@@ -238,6 +238,27 @@ public class Graphique extends JPanel implements MouseListener, MouseMotionListe
 		repaint();
 	}
 	
+	public void changeSize( int nb, int largeur, int hauteur ){
+		Sommet e = this.alEl.get(nb);
+		int centerX = e.getCenterX();
+		int centerY = e.getCenterY();
+		
+		e.setSize( largeur, hauteur );
+		
+		for( int i = 0; i < e.getAlArrete().size(); i++ ){
+			if( centerX == e.getAlArrete().get(i).getX1() && centerY == e.getAlArrete().get(i).getY1() ){
+				e.getAlArrete().get(i).setX1(e.getCenterX());
+				e.getAlArrete().get(i).setY1(e.getCenterY());
+			}
+			if( centerX == e.getAlArrete().get(i).getX2() && centerY == e.getAlArrete().get(i).getY2() ){
+				e.getAlArrete().get(i).setX2(e.getCenterX());
+				e.getAlArrete().get(i).setY2(e.getCenterY());
+			}
+		}
+		
+		repaint();
+	}
+	
 	//Permet de créer un objet Arrete en le reliant avec deux Sommets
 	public void createArrete( Sommet e1, Sommet e2 ){
 		Arrete l = new Arrete( e1, e2 );
