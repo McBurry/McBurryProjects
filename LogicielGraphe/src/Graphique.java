@@ -83,6 +83,27 @@ public class Graphique extends JPanel implements MouseListener, MouseMotionListe
 		repaint();
 	}
 	
+	//Supprime du graphe le sommet passé en paramètre ainsi que toutes les arretes
+	//lui étant reliées
+	public void deleteSommet( Sommet s ){
+		for( int i = 0; i < this.alEl.size(); i++ ){
+			if( this.alEl.get(i) == s ){
+				//Boucle permettant d'aller chercher et de supprimer chacune des arretes
+				//étant reliées au sommet allant être supprimé
+				for( int j = 0; j < this.alLine.size(); j++ ){
+					if( this.alLine.get(j).getSommet1() == this.alEl.get(i) || this.alLine.get(j).getSommet2() == this.alEl.get(i) ){
+						this.alLine.remove( this.alLine.get(j) );
+						j--;
+					}
+				}
+				this.alEl.remove(i);
+			}
+		}
+		this.nbSommet--;
+		this.arbre.maj();
+		repaint();
+	}
+	
 	/*public void setSommet( Sommet s ){
 		
 		s.setNom( sommet.getNom() );

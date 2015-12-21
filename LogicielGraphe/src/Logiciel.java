@@ -43,6 +43,28 @@ public class Logiciel extends JFrame implements ActionListener{
 		
 		this.fichier = new JMenu("Fichier");
 		
+		this.enregistrer = new JMenuItem("Enregistrer");
+		this.ouvrir = new JMenuItem("Ouvrir Projet");
+		this.exporterSousTexte = new JMenuItem("Exporter sous texte");
+		this.exporterSousImage = new JMenuItem("Exporter sous image");
+		this.exporterSousPdf = new JMenuItem("Exporter sous pdf");
+		
+		this.fichier.add(this.enregistrer);
+		this.fichier.add(this.ouvrir);
+		this.fichier.add(this.exporterSousTexte);
+		this.fichier.add(this.exporterSousImage);
+		this.fichier.add(this.exporterSousPdf);
+		
+		this.enregistrer.addActionListener(this);
+		this.ouvrir.addActionListener(this);
+		this.exporterSousTexte.addActionListener(this);
+		this.exporterSousImage.addActionListener(this);
+		this.exporterSousPdf.addActionListener(this);
+		
+		this.menu.add( this.fichier );
+		
+		this.edition = new JMenu("Edition");
+		
 		this.nouveau = new JMenu("Nouveau");
 		this.nouveauGraphe = new JMenuItem("Nouveau Graphe");
 		this.nouveauSommet = new JMenuItem("Nouveau Sommet");
@@ -61,29 +83,6 @@ public class Logiciel extends JFrame implements ActionListener{
 		this.nouveauArrete.addActionListener(this);
 		this.nouveauArc.addActionListener(this);
 		this.nouveauChemin.addActionListener(this);
-		
-		this.enregistrer = new JMenuItem("Enregistrer");
-		this.ouvrir = new JMenuItem("Ouvrir Projet");
-		this.exporterSousTexte = new JMenuItem("Exporter sous texte");
-		this.exporterSousImage = new JMenuItem("Exporter sous image");
-		this.exporterSousPdf = new JMenuItem("Exporter sous pdf");
-		
-		this.fichier.add(this.nouveau);
-		this.fichier.add(this.enregistrer);
-		this.fichier.add(this.ouvrir);
-		this.fichier.add(this.exporterSousTexte);
-		this.fichier.add(this.exporterSousImage);
-		this.fichier.add(this.exporterSousPdf);
-		
-		this.enregistrer.addActionListener(this);
-		this.ouvrir.addActionListener(this);
-		this.exporterSousTexte.addActionListener(this);
-		this.exporterSousImage.addActionListener(this);
-		this.exporterSousPdf.addActionListener(this);
-		
-		this.menu.add( this.fichier );
-		
-		this.edition = new JMenu("Edition");
 		
 		this.modifier = new JMenu("Modifier");
 		
@@ -109,6 +108,11 @@ public class Logiciel extends JFrame implements ActionListener{
 		this.supprimerArc = new JMenuItem("Supprimer Arc");
 		this.supprimerChemin = new JMenuItem("Supprimer Chemin");
 		
+		this.supprimerSommet.addActionListener(this);
+		this.supprimerArrete.addActionListener(this);
+		this.supprimerArc.addActionListener(this);
+		this.supprimerChemin.addActionListener(this);
+		
 		this.supprimer.add( this.supprimerSommet );
 		this.supprimer.add( this.supprimerArrete );
 		this.supprimer.add( this.supprimerArc );
@@ -121,6 +125,7 @@ public class Logiciel extends JFrame implements ActionListener{
 		this.styleGraphe = new JMenuItem("Style Graphe");
 		this.changerApparence = new JMenuItem("Changer Apparence");
 		
+		this.edition.add(this.nouveau);
 		this.edition.add( this.modifier );
 		this.edition.add( this.supprimer );
 		this.edition.add(this.retourArriere);
@@ -181,6 +186,10 @@ public class Logiciel extends JFrame implements ActionListener{
 		
 		if( e.getSource() == this.modifierSommet ){
 			FenetreModifierSommet n = new FenetreModifierSommet( this.graphe );
+		}
+		
+		if( e.getSource() == this.supprimerSommet ){
+			FenetreSupprimerSommet n = new FenetreSupprimerSommet( this.graphe );
 		}
 		
 		//Ouvre une fenetre de parcours de dossiers pour décider où enregistrer le projet courant
