@@ -10,6 +10,8 @@ public class Arrete extends JPanel {
 	
 	private Line2D l;
 	private ArrayList<Sommet> alSommet;
+	
+	private String nom = "";
 
 	public Arrete( Sommet s1, Sommet s2 ) {
 		this.s1 = s1;
@@ -26,6 +28,7 @@ public class Arrete extends JPanel {
 	public Line2D getLine2D(){	return this.l;	}
 	public ArrayList<Sommet> getAlSommet(){	return this.alSommet;	}
 
+	public String getNom(){	return this.nom;	}
 	public int getX1() {	return x1;	}
 	public int getY1() {	return y1;	}
 	public int getX2() {	return x2;	}

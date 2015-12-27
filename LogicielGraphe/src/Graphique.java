@@ -59,6 +59,8 @@ public class Graphique extends JPanel implements MouseListener, MouseMotionListe
 	public int getNbSommet(){	return this.nbSommet;	}
 	public ArrayList<Sommet> getAlSommet(){	return this.alEl;	}
 	
+	public ArrayList<Arrete> getAlLine(){	return this.alLine;	}
+	
 	//Ajoute un sommet au graphe avec des parametre par défault, puis réactualise
 	public void addSommet(){
 		this.nbSommet++;
@@ -104,15 +106,26 @@ public class Graphique extends JPanel implements MouseListener, MouseMotionListe
 		repaint();
 	}
 	
-	/*public void setSommet( Sommet s ){
-		
-		s.setNom( sommet.getNom() );
-		s.setSize( sommet.getWidth(), sommet.getHeight() );
-		s.setPosition( sommet.getX(), sommet.getY() );
-		System.out.println("DJQZHBQKJZDBQLZJDNKQZDJ");
+	//Supprime du graphe l'arrete passé en paramètre et va aller supprimer
+	//cette arrete et la supprimer dans chacun des sommets qui y étaient reliés
+	public void deleteArrete( Arrete a ){
+		for( int i = 0; i < this.alLine.size(); i++ ){
+			if( this.alLine.get(i) == a ){
+				for( int j = 0; j < this.alEl.size(); j++ ){
+					for( int k = 0; k < this.alEl.get(j).getAlArrete().size(); k++ ){
+						if( this.alEl.get(j).getAlArrete().get(k) == a ){
+							this.alEl.get(j).getAlArrete().remove(k);
+							k--;
+						}
+					}
+				}
+				this.alLine.remove(i);
+				System.out.println( "yata" );
+			}
+		}
 		this.arbre.maj();
 		repaint();
-	}*/
+	}
 	
 	//Permet d'enregistrer le projet en transcrivant les données du graphe dans le fichier f
 	public void enregistrerSous( File f ){

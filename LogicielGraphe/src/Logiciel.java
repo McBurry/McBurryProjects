@@ -192,6 +192,10 @@ public class Logiciel extends JFrame implements ActionListener{
 			FenetreSupprimerSommet n = new FenetreSupprimerSommet( this.graphe );
 		}
 		
+		if( e.getSource() == this.supprimerArrete ){
+			FenetreSupprimerArrete n = new FenetreSupprimerArrete( this.graphe );
+		}
+		
 		//Ouvre une fenetre de parcours de dossiers pour décider où enregistrer le projet courant
 		if( e.getSource() == this.enregistrer ){
 			JFileChooser enregistrerSous = new JFileChooser();
