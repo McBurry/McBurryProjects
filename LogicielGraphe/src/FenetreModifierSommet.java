@@ -2,6 +2,7 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -23,18 +24,24 @@ public class FenetreModifierSommet extends JFrame implements ActionListener, Lis
 	private JList list;
 	private JScrollPane scList;
 	private String[] tab;
+	private ArrayList<Sommet> selection;
+	private int selectedSommet;
 	
-	public FenetreModifierSommet( Graphique graphe ){
-		setTitle("Nouveau Sommet");
+	public FenetreModifierSommet( Graphique graphe, ArrayList<Sommet> selection ){
+		setTitle("Modifier Sommet");
 		this.graphe = graphe;
+		if( selection == null )
+			this.selection = this.graphe.getAlSommet();
+		else
+			this.selection = selection;
 		
 		this.pTotalHaut = new JPanel( new GridLayout(2,1) );
 		
 		this.pList = new JPanel( new GridLayout(1,2) );
 		this.lList = new JLabel("Sommet : ");
-		this.tab = new String[this.graphe.getAlSommet().size()];
-		for( int i = 0; i < this.graphe.getAlSommet().size(); i++ ){
-			this.tab[i] = this.graphe.getAlSommet().get(i).getNom();
+		this.tab = new String[this.selection.size()];
+		for( int i = 0; i < this.selection.size(); i++ ){
+			this.tab[i] = this.selection.get(i).getNom();
 		}
 		this.list = new JList( this.tab );
 		this.list.addListSelectionListener(this);
@@ -88,10 +95,10 @@ public class FenetreModifierSommet extends JFrame implements ActionListener, Lis
 	public void actionPerformed(ActionEvent e) {
 		if( e.getSource() == this.ok ){
 			//this.graphe.addSommet( new Sommet( this.tNom.getText(), Integer.parseInt(this.tX.getText()), Integer.parseInt(this.tY.getText()), Integer.parseInt(this.tWidth.getText()), Integer.parseInt(this.tHeight.getText()) ) );
-			Sommet s = this.graphe.getAlSommet().get( this.list.getSelectedIndex() );
+			Sommet s = this.graphe.getAlSommet().get( this.selectedSommet );
 			s.setNom(this.tNom.getText());
-			this.graphe.translate( this.list.getSelectedIndex(), Integer.parseInt(this.tX.getText()), Integer.parseInt(this.tY.getText()));
-			this.graphe.changeSize( this.list.getSelectedIndex(),Integer.parseInt(this.tWidth.getText()), Integer.parseInt(this.tHeight.getText()) );
+			this.graphe.translate( this.selectedSommet, Integer.parseInt(this.tX.getText()), Integer.parseInt(this.tY.getText()));
+			this.graphe.changeSize( this.selectedSommet,Integer.parseInt(this.tWidth.getText()), Integer.parseInt(this.tHeight.getText()) );
 			this.graphe.repaint();
 			System.out.println("Lol");
 			this.dispose();
@@ -104,12 +111,17 @@ public class FenetreModifierSommet extends JFrame implements ActionListener, Lis
 	public void valueChanged(ListSelectionEvent e) {
 		
 		if( e.getSource() == this.list ){
-			Sommet s = this.graphe.getAlSommet().get( this.list.getSelectedIndex() );
-			this.tNom.setText( s.getNom() );
-			this.tHeight.setText( "" + s.getHeight() );
-			this.tWidth.setText( "" + s.getWidth() );
-			this.tX.setText( "" + s.getX() );
-			this.tY.setText( "" + s.getY() );
+			for( int i = 0; i < this.graphe.getAlSommet().size(); i++ ){
+				if( this.graphe.getAlSommet().get(i) == this.selection.get( this.list.getSelectedIndex() ) ){
+					Sommet s = this.graphe.getAlSommet().get(i);
+					this.selectedSommet = i;
+					this.tNom.setText( s.getNom() );
+					this.tHeight.setText( "" + s.getHeight() );
+					this.tWidth.setText( "" + s.getWidth() );
+					this.tX.setText( "" + s.getX() );
+					this.tY.setText( "" + s.getY() );
+				}
+			}
 		}
 		
 	}

@@ -1,7 +1,12 @@
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -14,9 +19,11 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import javax.swing.JButton;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 
-public class Graphique extends JPanel implements MouseListener, MouseMotionListener{
+public class Graphique extends JPanel implements ActionListener, MouseListener, MouseMotionListener{
 	
 	private Sommet s1;
 	private JButton b1;
@@ -33,14 +40,21 @@ public class Graphique extends JPanel implements MouseListener, MouseMotionListe
 	private ArrayList<Sommet> alEl;
 	private ArrayList<Arrete> alLine;
 	
+	private ArrayList<Sommet> selectedSommet;
+	private ArrayList<Arrete> selectedArrete;
+	
+	private ArrayList<Integer> keyPressed;
+	
 	private Graphics2D g2;
 	private Dimension dim;
 	private Arbre arbre;
 	
 	private boolean instance = false;
 	
+	private JPopupMenu popup;
+	private JMenuItem addSommet, deleteSommet, modifySommet, addArrete, deleteArrete, modifyArrete;
+	
 	public Graphique( Arbre arbre ){
-		//setBackground( new Color(0,0,0) );
 		addMouseListener(this);
 		addMouseMotionListener(this);
 		this.nbSommet = 0;
@@ -52,6 +66,11 @@ public class Graphique extends JPanel implements MouseListener, MouseMotionListe
 
 		this.alEl = new ArrayList<Sommet>();
 		this.alLine = new ArrayList<Arrete>();
+		
+		this.selectedSommet = new ArrayList<Sommet>();
+		this.selectedArrete = new ArrayList<Arrete>();
+		
+		this.keyPressed = new ArrayList<Integer>();
 		
 		repaint();
 	}
@@ -73,7 +92,6 @@ public class Graphique extends JPanel implements MouseListener, MouseMotionListe
 	public void addSommet( Sommet s ){
 		this.nbSommet++;
 		this.alEl.add( s );
-		System.out.println("yolo");
 		this.arbre.maj();
 		repaint();
 	}
@@ -81,7 +99,6 @@ public class Graphique extends JPanel implements MouseListener, MouseMotionListe
 	//Ajoute au graphe l'arrete passé en paramètre, puis réactualise
 	public void addArrete( Arrete a ){
 		this.alLine.add(a);
-		System.out.println("yolo");
 		repaint();
 	}
 	
@@ -120,7 +137,6 @@ public class Graphique extends JPanel implements MouseListener, MouseMotionListe
 					}
 				}
 				this.alLine.remove(i);
-				System.out.println( "yata" );
 			}
 		}
 		this.arbre.maj();
@@ -148,7 +164,6 @@ public class Graphique extends JPanel implements MouseListener, MouseMotionListe
 					if( this.alEl.get(j) == this.alLine.get(i).getSommet1() && this.alEl.get(k) == this.alLine.get(i).getSommet2() ){
 						this.tabLiaisons[k][j] = true;
 						this.tabLiaisons[j][k] = true;
-						System.out.println("yeah");
 					}
 				}
 			}
@@ -324,23 +339,60 @@ public class Graphique extends JPanel implements MouseListener, MouseMotionListe
 		if( this.nbSommet > 0 ){
 			//Affichage de chacun des Sommets
 			for( int i = 0; i < this.alEl.size(); i++ ){
+				this.g2.setPaint( this.alEl.get(i).getColor() );
 				this.g2.draw( this.alEl.get(i).getEllipse2D() );
 				this.g2.drawString( this.alEl.get(i).getNom(), this.alEl.get(i).getCenterX(), this.alEl.get(i).getCenterY() );
 			}
 			
 			//Affichage de chacune des Arretes
 			for( int i = 0; i < this.alLine.size(); i++ ){
+				this.g2.setPaint( this.alLine.get(i).getColor() );
 				this.g2.draw( alLine.get(i).getLine2D() );
 			}
 		}
 	}
 
-	public void mouseClicked	(MouseEvent e) {}
+	public void mouseClicked	(MouseEvent e) {
+		if( e.getButton() == MouseEvent.BUTTON1 ){
+			if( !this.keyPressed.contains( KeyEvent.VK_SHIFT) ){
+				this.selectedSommet = new ArrayList<Sommet>();
+				for( int i = 0; i < this.alEl.size(); i++ ){
+					alEl.get(i).setColor( Color.BLACK );
+				}
+			}
+			for( int i = 0; i < this.alEl.size(); i++ ){
+				if( alEl.get(i).contains( new Point(e.getX(),e.getY()) ) ){
+					alEl.get(i).setColor( Color.BLUE );
+					this.selectedSommet.add( alEl.get(i) );
+					break;
+				}
+			}
+			repaint();
+		}
+		if( e.getButton() == MouseEvent.BUTTON3 ){
+			this.popup = new JPopupMenu();
+			for( int i = 0; i < this.alEl.size(); i++ ){
+				if( alEl.get(i).contains( new Point(e.getX(),e.getY()) ) ){
+					this.popup.add( this.modifySommet = new JMenuItem("Modifier Sommet") );
+					this.popup.add( this.deleteSommet = new JMenuItem("Supprimer Sommet") );
+					this.modifySommet.addActionListener(this);
+					this.deleteSommet.addActionListener(this);
+					break;
+				}
+			}
+			this.popup.show( Graphique.this, e.getX(), e.getY() );
+			repaint();
+		}
+	}
+	
 	public void mouseEntered	(MouseEvent e) {}
 	public void mouseExited		(MouseEvent e) {}
 	public void mousePressed	(MouseEvent e) {}
 	public void mouseMoved		(MouseEvent e) {}
 	public void mouseReleased	(MouseEvent e) {}
+	
+	public void resetKeyPressed() {	this.keyPressed = new ArrayList<Integer>();	}
+	public void setKeyPressed( int  i ) {	this.keyPressed.add(i);	}
 	
 	//Est appelé à chaque glissement de souris avec clic enfoncé
 	//Elle permet de déplacer un sommet en regardant si la souris est dans le sommet
@@ -348,9 +400,14 @@ public class Graphique extends JPanel implements MouseListener, MouseMotionListe
 		for( int i = 0; i < this.alEl.size(); i++ ){
 			if( alEl.get(i).contains( new Point(e.getX(),e.getY()) ) ){
 				this.translate( i, (int)(e.getX()-(alEl.get(i).getWidth()/2)), (int)(e.getY()-(alEl.get(i).getHeight()/2)) );
-				//System.out.println("lol");
 				break;
 			}
+		}
+	}
+
+	public void actionPerformed(ActionEvent e) {
+		if( e.getSource() == this.modifySommet ){
+			FenetreModifierSommet n = new FenetreModifierSommet( this, this.selectedSommet );
 		}
 	}
 }

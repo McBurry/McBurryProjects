@@ -1,4 +1,4 @@
-import java.awt.Font;
+import java.awt.Color;
 import java.awt.Point;
 import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
@@ -12,6 +12,7 @@ public class Sommet extends JPanel{
 	private Ellipse2D e;
 	private ArrayList<Arrete> alArrete;
 	private String nom;
+	private Color color = Color.BLACK;
 	
 	public Sommet( String nom, int x, int y, int largeur, int hauteur ){
 		this.x = x;
@@ -54,4 +55,7 @@ public class Sommet extends JPanel{
 	}
 	
 	public void setNom( String nom ){	this.nom = nom;	}
+	
+	public void setColor( Color c )	{	this.color = c;		}
+	public Color getColor()			{	return this.color;	}
 }

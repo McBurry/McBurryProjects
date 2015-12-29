@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.awt.geom.Line2D;
 import java.util.ArrayList;
 
@@ -10,6 +11,7 @@ public class Arrete extends JPanel {
 	
 	private Line2D l;
 	private ArrayList<Sommet> alSommet;
+	private Color color = Color.BLACK;
 	
 	private String nom = "";
 
@@ -55,4 +57,7 @@ public class Arrete extends JPanel {
 		this.y2 = y2;
 		this.l = new Line2D.Double( this.x1, this.y1, this.x2, this.y2 );
 	}
+	
+	public void setColor( Color c )	{	this.color = c;		}
+	public Color getColor()			{	return this.color;	}
 }

@@ -1,6 +1,8 @@
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.File;
 
 import javax.swing.JButton;
@@ -11,7 +13,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 
-public class Logiciel extends JFrame implements ActionListener{
+public class Logiciel extends JFrame implements ActionListener, KeyListener{
 	
 	private Graphique graphe;
 	private Arbre arbre;
@@ -37,6 +39,7 @@ public class Logiciel extends JFrame implements ActionListener{
 		setTitle("Logiciel");
 		setSize(500,300);
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		addKeyListener(this);
 		
 		this.menu = new JMenuBar();
 		setJMenuBar(menu);
@@ -185,7 +188,7 @@ public class Logiciel extends JFrame implements ActionListener{
 		}
 		
 		if( e.getSource() == this.modifierSommet ){
-			FenetreModifierSommet n = new FenetreModifierSommet( this.graphe );
+			FenetreModifierSommet n = new FenetreModifierSommet( this.graphe, null );
 		}
 		
 		if( e.getSource() == this.supprimerSommet ){
@@ -229,6 +232,10 @@ public class Logiciel extends JFrame implements ActionListener{
 		}
 		
 	}
+	
+	public void keyPressed(KeyEvent e) 	{	this.graphe.setKeyPressed( e.getKeyCode() );	}
+	public void keyReleased(KeyEvent e) {	this.graphe.resetKeyPressed();	}
+	public void keyTyped(KeyEvent e) {}
 	
 	public static void main( String[] args){
 		new Logiciel();
