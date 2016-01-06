@@ -491,5 +491,6 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 			for( int i = 0; i < this.selectedSommet.size(); i++ )
 				this.deleteSommet( this.selectedSommet.get(i) );
 		}
+		System.out.println("qzdqz");
 	}
 }
