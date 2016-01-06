@@ -1,6 +1,8 @@
+import java.awt.Checkbox;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -17,11 +19,12 @@ public class FenetreNouveauArrete extends JFrame implements ActionListener, List
 	private JPanel pCentre, pHaut, pBas;
 	private JButton ok, annuler;
 	private Graphique graphe;
-	private JLabel lNom, lSommetUn, lSommetDeux;
+	private JLabel lNom, lSommetUn, lSommetDeux, orienteVers;
 	private JTextField tNom;
 	private JList jlSommetUn, jlSommetDeux;
 	private JScrollPane scSommetUn, scSommetDeux;
 	private String[] tabSommetUn, tabSommetDeux;
+	private Checkbox s1, s2;
 	
 	private Sommet sUn, sDeux;
 	
@@ -64,7 +67,20 @@ public class FenetreNouveauArrete extends JFrame implements ActionListener, List
 		this.pCentre.add( this.scSommetDeux );
 		add( this.pCentre, "Center" );
 		
-		this.pBas = new JPanel( new GridLayout(1,2) );
+		this.pBas = new JPanel();
+		if( this.graphe.getOriente() ){
+			this.pBas.setLayout( new GridLayout(2,2) );
+			this.orienteVers = new JLabel("Orientation vers : ");
+			JPanel check = new JPanel( new GridLayout(1,2) );
+			this.s1 = new Checkbox( "Sommet 1" );
+			this.s2 = new Checkbox( "Sommet 2" );
+			check.add(this.s1);
+			check.add(this.s2);
+			this.pBas.add( this.orienteVers );
+			this.pBas.add( check );
+		}else{
+			this.pBas.setLayout( new GridLayout(1,2) );
+		}
 		this.ok = new JButton("Ok");
 		this.annuler = new JButton("Annuler");
 		this.pBas.add( this.ok );
@@ -79,9 +95,14 @@ public class FenetreNouveauArrete extends JFrame implements ActionListener, List
 
 	public void actionPerformed(ActionEvent e) {
 		if( e.getSource() == this.ok ){
-			this.graphe.createArrete( this.sUn, this.sDeux );
-			//this.graphe.addSommet( new Sommet( this.tNom.getText(), Integer.parseInt(this.tX.getText()), Integer.parseInt(this.tY.getText()), Integer.parseInt(this.tWidth.getText()), Integer.parseInt(this.tHeight.getText()) ) );
-			System.out.println("Lol");
+			if( this.graphe.getOriente() ){
+				ArrayList<Sommet> dir = new ArrayList<Sommet>();
+				if( this.s1.getState() )	dir.add( this.sDeux );
+				if( this.s2.getState() )	dir.add( this.sUn );
+				this.graphe.createArrete( this.sUn, this.sDeux, dir );
+			}
+			else	this.graphe.createArrete( this.sUn, this.sDeux );
+			
 			this.dispose();
 		}
 		if( e.getSource() == this.annuler ){

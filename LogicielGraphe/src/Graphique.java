@@ -6,10 +6,10 @@ import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
@@ -18,10 +18,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import javax.imageio.ImageIO;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class Graphique extends JPanel implements ActionListener, MouseListener, MouseMotionListener{
 	
@@ -50,6 +54,7 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 	private Arbre arbre;
 	
 	private boolean instance = false;
+	private boolean oriente = false;
 	
 	private JPopupMenu popup;
 	private JMenuItem addSommet, deleteSommet, modifySommet, addArrete, deleteArrete, modifyArrete;
@@ -77,8 +82,10 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 	
 	public int getNbSommet(){	return this.nbSommet;	}
 	public ArrayList<Sommet> getAlSommet(){	return this.alEl;	}
-	
 	public ArrayList<Arrete> getAlLine(){	return this.alLine;	}
+	public boolean getOriente(){	return this.oriente;	}
+	
+	public void setOriente( boolean oriente ){	this.oriente = oriente;	}
 	
 	//Ajoute un sommet au graphe avec des parametre par défault, puis réactualise
 	public void addSommet(){
@@ -175,6 +182,7 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 			FileWriter fw = new FileWriter( f );
 			BufferedWriter bw = new BufferedWriter(fw);
 			String s = "";
+			s += "oriente:" + this.getOriente();
 			for( int i = 0; i < this.tabLiaisons.length; i++ ){
 				for( int j = 0; j < this.tabLiaisons.length; j++ ){
 					if( j == this.tabLiaisons.length-1 ){
@@ -205,6 +213,11 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 		try{
 			FileReader fr = new FileReader( chemin );
 			Scanner sc = new Scanner ( fr );
+			
+			String oriente = sc.next();
+			if( oriente.contains("true") )	this.setOriente(true);
+			else	this.setOriente(false);
+			
 			String s = sc.next();
 			String[] tab = s.split(";");
 			int cpt = 0;
@@ -253,8 +266,26 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 				//Cree une Arrete entre deux Sommets qui ont chacun true l'un vers l'autre
 				//dans this.tabLiaisons
 				for( int k = 0; k < this.alEl.size()-1; k++ ){
-					if( this.tabLiaisons[this.alEl.size()-1][k] && this.tabLiaisons[k][this.alEl.size()-1] )
-						this.createArrete(this.alEl.get(k), this.alEl.get(this.alEl.size()-1));
+					if( !this.getOriente() ){
+						if( this.tabLiaisons[this.alEl.size()-1][k] && this.tabLiaisons[k][this.alEl.size()-1] )
+							this.createArrete(this.alEl.get(k), this.alEl.get(this.alEl.size()-1));
+					}
+					else{
+						ArrayList<Sommet> dir = new ArrayList<Sommet>();
+						if( this.tabLiaisons[this.alEl.size()-1][k] ){
+							dir.add(this.alEl.get(k));
+							this.createArrete(this.alEl.get(k), this.alEl.get(this.alEl.size()-1), dir);
+						}
+						if( this.tabLiaisons[this.alEl.size()-1][k] ){
+							dir.add(this.alEl.get(this.alEl.size()-1));
+							this.createArrete(this.alEl.get(k), this.alEl.get(this.alEl.size()-1), dir);
+						}
+						if( this.tabLiaisons[this.alEl.size()-1][k] && this.tabLiaisons[k][this.alEl.size()-1] ){
+							dir.add(this.alEl.get(k));
+							dir.add(this.alEl.get(this.alEl.size()-1));
+							this.createArrete(this.alEl.get(k), this.alEl.get(this.alEl.size()-1), dir);
+						}
+					}
 				}
 			}
 		}
@@ -316,6 +347,15 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 		this.alLine.add(l);
 	}
 	
+	//Permet de créer un objet Arrete orienté en le reliant avec deux Sommets
+	public void createArrete( Sommet e1, Sommet e2, ArrayList<Sommet> dir ){
+		Arrete l = new Arrete( e1, e2, dir );
+		e1.getAlArrete().add(l);
+		e2.getAlArrete().add(l);
+		this.alLine.add(l);
+		repaint();
+	}
+	
 	//Crée un nouveau graphe
 	//Cette méthode est appelé par la classe FenetreNouveauProjet
 	//Car elle permet par la même occasion de réinitialiser la fenetre
@@ -323,10 +363,34 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 		this.nbSommet = 0;
 		this.alEl = new ArrayList<Sommet>();
 		this.alLine = new ArrayList<Arrete>();
+		this.arbre.setAlSommet(this.alEl);
 		this.arbre.maj();
 		repaint();
 	}
 	
+	public void exportImage(){
+		File fileToSave = null;
+        try{
+    		BufferedImage bufferedImage = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_RGB);
+    		JFileChooser fileChooser = new JFileChooser();
+    		fileChooser.setDialogTitle("Enregistrer sous");
+    		FileFilter imageFilter = new FileNameExtensionFilter("PNG", "png");
+    		fileChooser.addChoosableFileFilter(imageFilter);
+    		fileChooser.setFileFilter(imageFilter);
+    		int userSelection = fileChooser.showDialog(fileChooser, "Enregistrer");
+    		if (userSelection == JFileChooser.APPROVE_OPTION){
+    			fileToSave = fileChooser.getSelectedFile();
+    			if (!fileToSave.getPath().contains(".png"))
+    				fileToSave = new File(fileToSave.getPath() + ".png");
+    		}
+			g2 = bufferedImage.createGraphics();
+			paintAll(g2);
+	        ImageIO.write(bufferedImage, "png", fileToSave);
+    	}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	public void paintComponent( Graphics g ){
 		this.g2 = (Graphics2D) g;
@@ -347,7 +411,10 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 			//Affichage de chacune des Arretes
 			for( int i = 0; i < this.alLine.size(); i++ ){
 				this.g2.setPaint( this.alLine.get(i).getColor() );
-				this.g2.draw( alLine.get(i).getLine2D() );
+				this.g2.draw( this.alLine.get(i).getLine2D() );
+				for( int j = 0; j < this.alLine.get(i).getAlPolygon().size(); j++ )
+					this.g2.draw( this.alLine.get(i).getAlPolygon().get(j) );
+				//System.out.println( Math.round(alLine.get(i).getOrientationVersS2()) );
 			}
 		}
 	}
@@ -371,11 +438,12 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 		}
 		if( e.getButton() == MouseEvent.BUTTON3 ){
 			this.popup = new JPopupMenu();
+			this.popup.add( this.addSommet = new JMenuItem("Ajouter Sommet") );
+			this.addSommet.addActionListener(this);
 			for( int i = 0; i < this.alEl.size(); i++ ){
 				if( alEl.get(i).contains( new Point(e.getX(),e.getY()) ) ){
 					this.popup.add( this.modifySommet = new JMenuItem("Modifier Sommet") );
 					this.popup.add( this.deleteSommet = new JMenuItem("Supprimer Sommet") );
-					this.modifySommet.addActionListener(this);
 					this.deleteSommet.addActionListener(this);
 					break;
 				}
@@ -406,8 +474,15 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 	}
 
 	public void actionPerformed(ActionEvent e) {
+		if( e.getSource() == this.addSommet ){
+			FenetreNouveauSommet n = new FenetreNouveauSommet( this );
+		}
 		if( e.getSource() == this.modifySommet ){
 			FenetreModifierSommet n = new FenetreModifierSommet( this, this.selectedSommet );
+		}
+		if( e.getSource() == this.deleteSommet ){
+			for( int i = 0; i < this.selectedSommet.size(); i++ )
+				this.deleteSommet( this.selectedSommet.get(i) );
 		}
 	}
 }

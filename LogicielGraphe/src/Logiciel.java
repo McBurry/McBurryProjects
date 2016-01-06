@@ -3,15 +3,25 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.*;
 import java.io.File;
+import java.util.Locale;
 
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
 
 public class Logiciel extends JFrame implements ActionListener, KeyListener{
 	
@@ -20,12 +30,12 @@ public class Logiciel extends JFrame implements ActionListener, KeyListener{
 	private JPanel total, button;
 	private JButton b1, b2;
 	public static String nomProjet;
-	
+	private File currentFile = null;
 	private JMenuBar menu;
 	
 	private JMenu fichier, edition, affichage, nouveau, modifier, supprimer;
 	
-	private JMenuItem enregistrer, ouvrir, retourArriere, exporterSousTexte, exporterSousImage, exporterSousPdf;
+	private JMenuItem enregistrer, enregistrerSous, ouvrir, retourArriere, exporterSousTexte, exporterSousImage, exporterSousPdf;
 	private JMenuItem nouveauGraphe, nouveauSommet, nouveauArrete, nouveauArc, nouveauChemin;
 	
 	private JMenuItem modifierSelection, copierSelection, collerSelection, styleGraphe, changerApparence;
@@ -47,18 +57,21 @@ public class Logiciel extends JFrame implements ActionListener, KeyListener{
 		this.fichier = new JMenu("Fichier");
 		
 		this.enregistrer = new JMenuItem("Enregistrer");
+		this.enregistrerSous = new JMenuItem("Enregistrer Sous");
 		this.ouvrir = new JMenuItem("Ouvrir Projet");
 		this.exporterSousTexte = new JMenuItem("Exporter sous texte");
 		this.exporterSousImage = new JMenuItem("Exporter sous image");
 		this.exporterSousPdf = new JMenuItem("Exporter sous pdf");
 		
 		this.fichier.add(this.enregistrer);
+		this.fichier.add(this.enregistrerSous);
 		this.fichier.add(this.ouvrir);
 		this.fichier.add(this.exporterSousTexte);
 		this.fichier.add(this.exporterSousImage);
 		this.fichier.add(this.exporterSousPdf);
 		
 		this.enregistrer.addActionListener(this);
+		this.enregistrerSous.addActionListener(this);
 		this.ouvrir.addActionListener(this);
 		this.exporterSousTexte.addActionListener(this);
 		this.exporterSousImage.addActionListener(this);
@@ -88,7 +101,7 @@ public class Logiciel extends JFrame implements ActionListener, KeyListener{
 		this.nouveauChemin.addActionListener(this);
 		
 		this.modifier = new JMenu("Modifier");
-		
+			
 		this.modifierSommet = new JMenuItem("Modifier Sommet");
 		this.modifierArrete = new JMenuItem("Modifier Arrete");
 		this.modifierArc = new JMenuItem("Modifier Arc");
@@ -127,7 +140,8 @@ public class Logiciel extends JFrame implements ActionListener, KeyListener{
 		this.collerSelection = new JMenuItem("Coller Selection");
 		this.styleGraphe = new JMenuItem("Style Graphe");
 		this.changerApparence = new JMenuItem("Changer Apparence");
-		
+		this.changerApparence.addActionListener(this);
+
 		this.edition.add(this.nouveau);
 		this.edition.add( this.modifier );
 		this.edition.add( this.supprimer );
@@ -167,6 +181,16 @@ public class Logiciel extends JFrame implements ActionListener, KeyListener{
 		
 		//pack();
 		setVisible(true);
+		try { 
+				Locale.setDefault(new Locale("fr", "FRANCE", "WIN"));
+				UIManager.getDefaults().setDefaultLocale(new Locale("fr", "FRANCE", "WIN"));
+				JComponent.setDefaultLocale(new Locale("fr", "FRANCE", "WIN"));
+				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName()); 
+				SwingUtilities.updateComponentTreeUI(this); 
+			} catch (InstantiationException e) { 
+			} catch (ClassNotFoundException e) { 
+			} catch (UnsupportedLookAndFeelException e) { 
+			} catch (IllegalAccessException e) {}
 	}
 	
 	//C'est ici que l'on va gérer les actions de chacun des boutons dans la barre de menu
@@ -198,21 +222,41 @@ public class Logiciel extends JFrame implements ActionListener, KeyListener{
 		if( e.getSource() == this.supprimerArrete ){
 			FenetreSupprimerArrete n = new FenetreSupprimerArrete( this.graphe );
 		}
+		if( e.getSource() == this.exporterSousImage ){
+			graphe.exportImage();
+		}
+		if( e.getSource() == this.exporterSousPdf ){
+			//graphe.exportPdf();
+		}
+		
+		if( e.getSource() == this.enregistrer ){
+				if (currentFile == null)
+					JOptionPane.showMessageDialog(null,"Aucun projet n'est encore ouvert");
+				else
+					this.graphe.enregistrerSous( currentFile );
+				System.out.println("Enregistrement de "+currentFile.getPath());
+		}
 		
 		//Ouvre une fenetre de parcours de dossiers pour décider où enregistrer le projet courant
-		if( e.getSource() == this.enregistrer ){
-			JFileChooser enregistrerSous = new JFileChooser();
-			enregistrerSous.setCurrentDirectory( new File(".") );
-			enregistrerSous.setDialogTitle( "Enregistrer Sous" );
-			enregistrerSous.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-
-			int resultatEnregistrer = enregistrerSous.showDialog(enregistrerSous, "Enregistrer");
-			if (resultatEnregistrer == JFileChooser.APPROVE_OPTION){
-				String chemin = enregistrerSous.getSelectedFile().getAbsolutePath()+"\\";
-				
-				this.graphe.enregistrerSous( new File(chemin+this.nomProjet+".txt") );
-				
-				System.out.println( chemin );
+		if( e.getSource() == this.enregistrerSous ){
+			if (currentFile == null)
+				JOptionPane.showMessageDialog(null,"Aucun projet n'est encore ouvert");
+			else {
+				JFileChooser enregistrerSous = new JFileChooser();
+				enregistrerSous.setCurrentDirectory( new File(".") );
+				enregistrerSous.setDialogTitle( "Enregistrer Sous" );
+	    		FileFilter textFilter = new FileNameExtensionFilter("Fichier Texte", "txt");
+	    		enregistrerSous.addChoosableFileFilter(textFilter);
+	    		enregistrerSous.setFileFilter(textFilter);
+				int resultatEnregistrer = enregistrerSous.showDialog(enregistrerSous, "Enregistrer");
+				if (resultatEnregistrer == JFileChooser.APPROVE_OPTION){
+					File chemin = enregistrerSous.getSelectedFile();
+					if (!chemin.getPath().contains(".png"))
+	    				chemin = new File(chemin.getPath() + ".txt");
+					
+					this.graphe.enregistrerSous( chemin );
+					currentFile = chemin;
+				}
 			}
 		}
 		
@@ -221,13 +265,15 @@ public class Logiciel extends JFrame implements ActionListener, KeyListener{
 			JFileChooser enregistrerSous = new JFileChooser();
 			enregistrerSous.setCurrentDirectory( new File(".") );
 			enregistrerSous.setDialogTitle( "Ouvrir" );
+    		FileFilter textFilter = new FileNameExtensionFilter("Fichier Texte", "txt");
+    		enregistrerSous.addChoosableFileFilter(textFilter);
+    		enregistrerSous.setFileFilter(textFilter);
 			int resultatEnregistrer = enregistrerSous.showDialog(ouvrir, "Ouvrir");
 			if (resultatEnregistrer == JFileChooser.APPROVE_OPTION){
 				String chemin = enregistrerSous.getSelectedFile().getAbsolutePath()+"\\";
 				
 				this.graphe.initFichier( chemin );
-				
-				System.out.println( chemin );
+				currentFile = new File (chemin);
 			}
 		}
 		
