@@ -475,7 +475,7 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 		}
 	}
 	public void mouseWheelMoved(MouseWheelEvent e){
-		
+		System.out.println("salut");
 	}
 	
 
