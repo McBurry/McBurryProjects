@@ -184,7 +184,13 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 			FileWriter fw = new FileWriter( f );
 			BufferedWriter bw = new BufferedWriter(fw);
 			String s = "";
+			
+			//Liste de paramètre du graphe
 			s += "oriente:" + this.getOriente();
+			s += "position:\n";
+			for( int i = 0; i < this.alSommet.size(); i++ )
+				s+= "x:"+this.alSommet.get(i).getX()+"y:"+this.alSommet.get(i).getY()+"\n";
+			
 			for( int i = 0; i < this.tabLiaisons.length; i++ ){
 				for( int j = 0; j < this.tabLiaisons.length; j++ ){
 					if( j == this.tabLiaisons.length-1 ){
@@ -479,7 +485,6 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 		System.out.println("ez");
 		System.out.println("ioehozerg");
 	}
-	
 
 	public void actionPerformed(ActionEvent e) {
 		if( e.getSource() == this.addSommet ){

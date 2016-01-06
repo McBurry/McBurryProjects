@@ -47,7 +47,6 @@ public class Logiciel extends JFrame implements ActionListener, KeyListener{
 	
 	public Logiciel(){
 		setTitle("Logiciel");
-		setTitle("test");
 		setSize(500,300);
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		addKeyListener(this);
