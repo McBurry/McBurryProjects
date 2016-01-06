@@ -22,6 +22,8 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import com.itextpdf.text.DocumentException;
+
 
 public class Logiciel extends JFrame implements ActionListener, KeyListener{
 	
@@ -30,7 +32,7 @@ public class Logiciel extends JFrame implements ActionListener, KeyListener{
 	private JPanel total, button;
 	private JButton b1, b2;
 	public static String nomProjet;
-	private File currentFile = null;
+	public static File currentFile = null;
 	private JMenuBar menu;
 	
 	private JMenu fichier, edition, affichage, nouveau, modifier, supprimer;
@@ -61,7 +63,7 @@ public class Logiciel extends JFrame implements ActionListener, KeyListener{
 		this.ouvrir = new JMenuItem("Ouvrir Projet");
 		this.exporterSousTexte = new JMenuItem("Exporter sous texte");
 		this.exporterSousImage = new JMenuItem("Exporter sous image");
-		this.exporterSousPdf = new JMenuItem("Exporter sous pdf");
+		this.exporterSousPdf = new JMenuItem("Exporter sous PDF");
 		
 		this.fichier.add(this.enregistrer);
 		this.fichier.add(this.enregistrerSous);
@@ -226,14 +228,21 @@ public class Logiciel extends JFrame implements ActionListener, KeyListener{
 			graphe.exportImage();
 		}
 		if( e.getSource() == this.exporterSousPdf ){
-			//graphe.exportPdf();
+			try {
+				graphe.exportPdf();
+			} catch (DocumentException e1) {
+				e1.printStackTrace();
+			}
 		}
 		
 		if( e.getSource() == this.enregistrer ){
 				if (currentFile == null)
 					JOptionPane.showMessageDialog(null,"Aucun projet n'est encore ouvert");
 				else
-					this.graphe.enregistrerSous( currentFile );
+					if (currentFile.getPath().equals("unregistred"))
+						this.enregistrerSous.doClick();
+					else
+						this.graphe.enregistrerSous( currentFile );
 				System.out.println("Enregistrement de "+currentFile.getPath());
 		}
 		
