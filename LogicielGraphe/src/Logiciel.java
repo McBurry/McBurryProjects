@@ -46,7 +46,8 @@ public class Logiciel extends JFrame implements ActionListener, KeyListener{
 	private JMenuItem recharger, zoomSelection, dezoomSelection;
 	
 	public Logiciel(){
-		setTitle("Logiciel ");
+		setTitle("Logiciel");
+		setTitle("test");
 		setSize(500,300);
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		addKeyListener(this);
