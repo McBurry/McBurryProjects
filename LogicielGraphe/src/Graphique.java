@@ -9,6 +9,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -27,7 +29,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-public class Graphique extends JPanel implements ActionListener, MouseListener, MouseMotionListener{
+public class Graphique extends JPanel implements ActionListener, MouseListener, MouseMotionListener,MouseWheelListener{
 	
 	private Sommet s1;
 	private JButton b1;
@@ -472,6 +474,10 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 			}
 		}
 	}
+	public void mouseWheelMoved(MouseWheelEvent e){
+		
+	}
+	
 
 	public void actionPerformed(ActionEvent e) {
 		if( e.getSource() == this.addSommet ){
