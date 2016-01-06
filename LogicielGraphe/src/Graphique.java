@@ -13,7 +13,9 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -28,6 +30,17 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
+
+import com.itextpdf.awt.PdfGraphics2D;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfTemplate;
+import com.itextpdf.text.pdf.PdfWriter;
 
 public class Graphique extends JPanel implements ActionListener, MouseListener, MouseMotionListener,MouseWheelListener{
 	
@@ -388,6 +401,42 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 			g2 = bufferedImage.createGraphics();
 			paintAll(g2);
 	        ImageIO.write(bufferedImage, "png", fileToSave);
+    	}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void exportPdf() throws DocumentException{
+		String fileToSave = null;
+        try{
+    		BufferedImage bufferedImage = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_RGB);
+    		JFileChooser fileChooser = new JFileChooser();
+    		fileChooser.setDialogTitle("Selectionnez l'emplacement du fichier à sauvergarder");
+    		int userSelection = fileChooser.showSaveDialog(this);
+    		if (userSelection == JFileChooser.APPROVE_OPTION){
+    			fileToSave = fileChooser.getSelectedFile().toString();
+    			if (!fileToSave.contains(".pdf"))
+    				fileToSave += ".pdf";
+    		}
+			g2 = bufferedImage.createGraphics();
+	        Document document = new Document();
+	        PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(fileToSave));
+			g2 = bufferedImage.createGraphics();
+			paintAll(g2);
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ImageIO.write(bufferedImage, "png", baos);
+			Image iTextImage = Image.getInstance(baos.toByteArray());
+			
+            document.addAuthor("Groupe 10 BTW");
+            document.addTitle("Importation du graph "+ Logiciel.nomProjet);
+            document.open();
+            Paragraph PImage = new Paragraph();
+            PImage.setAlignment(Element.ALIGN_CENTER);
+            PImage.add(iTextImage);
+            document.add(PImage);
+            document.close();
+			
     	}
 		catch (IOException e) {
 			e.printStackTrace();

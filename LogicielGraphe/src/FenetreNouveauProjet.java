@@ -3,6 +3,7 @@ import java.awt.CheckboxGroup;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -56,6 +57,7 @@ public class FenetreNouveauProjet extends JFrame implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		if( e.getSource() == this.ok ){
 			this.graphe.newGraphique();
+			Logiciel.currentFile = new File ("unregistred");
 			if( this.group.getSelectedCheckbox() == this.oui )	this.graphe.setOriente(true);
 			else	this.graphe.setOriente(false);
 			Logiciel.nomProjet = this.tNom.getText();
