@@ -9,6 +9,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -27,7 +29,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-public class Graphique extends JPanel implements ActionListener, MouseListener, MouseMotionListener{
+public class Graphique extends JPanel implements ActionListener, MouseListener, MouseMotionListener,MouseWheelListener{
 	
 	private Sommet s1;
 	private JButton b1;
@@ -41,7 +43,7 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 	
 	private boolean[][] tabLiaisons;
 	
-	private ArrayList<Sommet> alEl;
+	private ArrayList<Sommet> alSommet;
 	private ArrayList<Arrete> alLine;
 	
 	private ArrayList<Sommet> selectedSommet;
@@ -69,7 +71,7 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 		this.instance = true;
 		this.arbre = arbre;
 
-		this.alEl = new ArrayList<Sommet>();
+		this.alSommet = new ArrayList<Sommet>();
 		this.alLine = new ArrayList<Arrete>();
 		
 		this.selectedSommet = new ArrayList<Sommet>();
@@ -81,7 +83,7 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 	}
 	
 	public int getNbSommet(){	return this.nbSommet;	}
-	public ArrayList<Sommet> getAlSommet(){	return this.alEl;	}
+	public ArrayList<Sommet> getAlSommet(){	return this.alSommet;	}
 	public ArrayList<Arrete> getAlLine(){	return this.alLine;	}
 	public boolean getOriente(){	return this.oriente;	}
 	
@@ -90,15 +92,15 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 	//Ajoute un sommet au graphe avec des parametre par défault, puis réactualise
 	public void addSommet(){
 		this.nbSommet++;
-		Sommet e = new Sommet( Integer.toString(this.alEl.size()+1), 50, 50, this.alEl.get(0).getWidth(), this.alEl.get(0).getHeight() );
-		this.alEl.add(e);
+		Sommet e = new Sommet( Integer.toString(this.alSommet.size()+1), 50, 50, this.alSommet.get(0).getWidth(), this.alSommet.get(0).getHeight() );
+		this.alSommet.add(e);
 		repaint();
 	}
 	
 	//Ajoute au graphe le sommet passé en paramètre, puis réactualise
 	public void addSommet( Sommet s ){
 		this.nbSommet++;
-		this.alEl.add( s );
+		this.alSommet.add( s );
 		this.arbre.maj();
 		repaint();
 	}
@@ -112,17 +114,17 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 	//Supprime du graphe le sommet passé en paramètre ainsi que toutes les arretes
 	//lui étant reliées
 	public void deleteSommet( Sommet s ){
-		for( int i = 0; i < this.alEl.size(); i++ ){
-			if( this.alEl.get(i) == s ){
+		for( int i = 0; i < this.alSommet.size(); i++ ){
+			if( this.alSommet.get(i) == s ){
 				//Boucle permettant d'aller chercher et de supprimer chacune des arretes
 				//étant reliées au sommet allant être supprimé
 				for( int j = 0; j < this.alLine.size(); j++ ){
-					if( this.alLine.get(j).getSommet1() == this.alEl.get(i) || this.alLine.get(j).getSommet2() == this.alEl.get(i) ){
+					if( this.alLine.get(j).getSommet1() == this.alSommet.get(i) || this.alLine.get(j).getSommet2() == this.alSommet.get(i) ){
 						this.alLine.remove( this.alLine.get(j) );
 						j--;
 					}
 				}
-				this.alEl.remove(i);
+				this.alSommet.remove(i);
 			}
 		}
 		this.nbSommet--;
@@ -135,10 +137,10 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 	public void deleteArrete( Arrete a ){
 		for( int i = 0; i < this.alLine.size(); i++ ){
 			if( this.alLine.get(i) == a ){
-				for( int j = 0; j < this.alEl.size(); j++ ){
-					for( int k = 0; k < this.alEl.get(j).getAlArrete().size(); k++ ){
-						if( this.alEl.get(j).getAlArrete().get(k) == a ){
-							this.alEl.get(j).getAlArrete().remove(k);
+				for( int j = 0; j < this.alSommet.size(); j++ ){
+					for( int k = 0; k < this.alSommet.get(j).getAlArrete().size(); k++ ){
+						if( this.alSommet.get(j).getAlArrete().get(k) == a ){
+							this.alSommet.get(j).getAlArrete().remove(k);
 							k--;
 						}
 					}
@@ -166,9 +168,9 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 		//Va chercher dans chacune des arretes à quelles sommets elle est relié, puis la retranscrit dans le 
 		//Tableau des liaisons par des trues
 		for( int i = 0; i < this.alLine.size(); i++ ){
-			for( int j = 0; j < this.alEl.size(); j++ ){
-				for( int k = 0; k < this.alEl.size(); k++ ){
-					if( this.alEl.get(j) == this.alLine.get(i).getSommet1() && this.alEl.get(k) == this.alLine.get(i).getSommet2() ){
+			for( int j = 0; j < this.alSommet.size(); j++ ){
+				for( int k = 0; k < this.alSommet.size(); k++ ){
+					if( this.alSommet.get(j) == this.alLine.get(i).getSommet1() && this.alSommet.get(k) == this.alLine.get(i).getSommet2() ){
 						this.tabLiaisons[k][j] = true;
 						this.tabLiaisons[j][k] = true;
 					}
@@ -259,38 +261,38 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 		for( int i = 0; i < sqrt; i++ ){
 			for( int j = 0; j < sqrt; j++ ){
 				//Cree un sommet pour chaque NbSommet
-				if( this.alEl.size() < this.nbSommet ){
+				if( this.alSommet.size() < this.nbSommet ){
 					Sommet e = new Sommet( Integer.toString(i*sqrt+j+1), (this.graphiqueHeight/sqrt)*i, (this.graphiqueWidth/sqrt)*j, (int)(Math.min(this.graphiqueHeight/sqrt, this.graphiqueWidth/sqrt) *0.8), (int)(Math.min(this.graphiqueHeight/sqrt, this.graphiqueWidth/sqrt) *0.8) );
-					this.alEl.add((int)(i*sqrt+j),e);
+					this.alSommet.add((int)(i*sqrt+j),e);
 				}
 				//Cree une Arrete entre deux Sommets qui ont chacun true l'un vers l'autre
 				//dans this.tabLiaisons
-				for( int k = 0; k < this.alEl.size()-1; k++ ){
+				for( int k = 0; k < this.alSommet.size()-1; k++ ){
 					if( !this.getOriente() ){
-						if( this.tabLiaisons[this.alEl.size()-1][k] && this.tabLiaisons[k][this.alEl.size()-1] )
-							this.createArrete(this.alEl.get(k), this.alEl.get(this.alEl.size()-1));
+						if( this.tabLiaisons[this.alSommet.size()-1][k] && this.tabLiaisons[k][this.alSommet.size()-1] )
+							this.createArrete(this.alSommet.get(k), this.alSommet.get(this.alSommet.size()-1));
 					}
 					else{
 						ArrayList<Sommet> dir = new ArrayList<Sommet>();
-						if( this.tabLiaisons[this.alEl.size()-1][k] ){
-							dir.add(this.alEl.get(k));
-							this.createArrete(this.alEl.get(k), this.alEl.get(this.alEl.size()-1), dir);
+						if( this.tabLiaisons[this.alSommet.size()-1][k] ){
+							dir.add(this.alSommet.get(k));
+							this.createArrete(this.alSommet.get(k), this.alSommet.get(this.alSommet.size()-1), dir);
 						}
-						if( this.tabLiaisons[this.alEl.size()-1][k] ){
-							dir.add(this.alEl.get(this.alEl.size()-1));
-							this.createArrete(this.alEl.get(k), this.alEl.get(this.alEl.size()-1), dir);
+						if( this.tabLiaisons[this.alSommet.size()-1][k] ){
+							dir.add(this.alSommet.get(this.alSommet.size()-1));
+							this.createArrete(this.alSommet.get(k), this.alSommet.get(this.alSommet.size()-1), dir);
 						}
-						if( this.tabLiaisons[this.alEl.size()-1][k] && this.tabLiaisons[k][this.alEl.size()-1] ){
-							dir.add(this.alEl.get(k));
-							dir.add(this.alEl.get(this.alEl.size()-1));
-							this.createArrete(this.alEl.get(k), this.alEl.get(this.alEl.size()-1), dir);
+						if( this.tabLiaisons[this.alSommet.size()-1][k] && this.tabLiaisons[k][this.alSommet.size()-1] ){
+							dir.add(this.alSommet.get(k));
+							dir.add(this.alSommet.get(this.alSommet.size()-1));
+							this.createArrete(this.alSommet.get(k), this.alSommet.get(this.alSommet.size()-1), dir);
 						}
 					}
 				}
 			}
 		}
 		
-		this.arbre.setAlSommet( this.alEl );
+		this.arbre.setAlSommet( this.alSommet );
 		repaint();
 		this.arbre.maj();
 	}
@@ -298,7 +300,7 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 	//Cette méthode permet de déplacer un Sommet vers une position
 	//Elle déplace aussi par la même occasion les Arretes qui y sont reliés
 	public void translate( int nb, int x, int y ){
-		Sommet e = this.alEl.get(nb);
+		Sommet e = this.alSommet.get(nb);
 		int centerX = e.getCenterX();
 		int centerY = e.getCenterY();
 		
@@ -319,7 +321,7 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 	}
 	
 	public void changeSize( int nb, int largeur, int hauteur ){
-		Sommet e = this.alEl.get(nb);
+		Sommet e = this.alSommet.get(nb);
 		int centerX = e.getCenterX();
 		int centerY = e.getCenterY();
 		
@@ -361,9 +363,9 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 	//Car elle permet par la même occasion de réinitialiser la fenetre
 	public void newGraphique(){
 		this.nbSommet = 0;
-		this.alEl = new ArrayList<Sommet>();
+		this.alSommet = new ArrayList<Sommet>();
 		this.alLine = new ArrayList<Arrete>();
-		this.arbre.setAlSommet(this.alEl);
+		this.arbre.setAlSommet(this.alSommet);
 		this.arbre.maj();
 		repaint();
 	}
@@ -402,10 +404,10 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 		
 		if( this.nbSommet > 0 ){
 			//Affichage de chacun des Sommets
-			for( int i = 0; i < this.alEl.size(); i++ ){
-				this.g2.setPaint( this.alEl.get(i).getColor() );
-				this.g2.draw( this.alEl.get(i).getEllipse2D() );
-				this.g2.drawString( this.alEl.get(i).getNom(), this.alEl.get(i).getCenterX(), this.alEl.get(i).getCenterY() );
+			for( int i = 0; i < this.alSommet.size(); i++ ){
+				this.g2.setPaint( this.alSommet.get(i).getColor() );
+				this.g2.draw( this.alSommet.get(i).getEllipse2D() );
+				this.g2.drawString( this.alSommet.get(i).getNom(), this.alSommet.get(i).getCenterX(), this.alSommet.get(i).getCenterY() );
 			}
 			
 			//Affichage de chacune des Arretes
@@ -423,14 +425,14 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 		if( e.getButton() == MouseEvent.BUTTON1 ){
 			if( !this.keyPressed.contains( KeyEvent.VK_SHIFT) ){
 				this.selectedSommet = new ArrayList<Sommet>();
-				for( int i = 0; i < this.alEl.size(); i++ ){
-					alEl.get(i).setColor( Color.BLACK );
+				for( int i = 0; i < this.alSommet.size(); i++ ){
+					alSommet.get(i).setColor( Color.BLACK );
 				}
 			}
-			for( int i = 0; i < this.alEl.size(); i++ ){
-				if( alEl.get(i).contains( new Point(e.getX(),e.getY()) ) ){
-					alEl.get(i).setColor( Color.BLUE );
-					this.selectedSommet.add( alEl.get(i) );
+			for( int i = 0; i < this.alSommet.size(); i++ ){
+				if( alSommet.get(i).contains( new Point(e.getX(),e.getY()) ) ){
+					alSommet.get(i).setColor( Color.BLUE );
+					this.selectedSommet.add( alSommet.get(i) );
 					break;
 				}
 			}
@@ -440,8 +442,8 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 			this.popup = new JPopupMenu();
 			this.popup.add( this.addSommet = new JMenuItem("Ajouter Sommet") );
 			this.addSommet.addActionListener(this);
-			for( int i = 0; i < this.alEl.size(); i++ ){
-				if( alEl.get(i).contains( new Point(e.getX(),e.getY()) ) ){
+			for( int i = 0; i < this.alSommet.size(); i++ ){
+				if( alSommet.get(i).contains( new Point(e.getX(),e.getY()) ) ){
 					this.popup.add( this.modifySommet = new JMenuItem("Modifier Sommet") );
 					this.popup.add( this.deleteSommet = new JMenuItem("Supprimer Sommet") );
 					this.deleteSommet.addActionListener(this);
@@ -465,13 +467,19 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 	//Est appelé à chaque glissement de souris avec clic enfoncé
 	//Elle permet de déplacer un sommet en regardant si la souris est dans le sommet
 	public void mouseDragged	(MouseEvent e){
-		for( int i = 0; i < this.alEl.size(); i++ ){
-			if( alEl.get(i).contains( new Point(e.getX(),e.getY()) ) ){
-				this.translate( i, (int)(e.getX()-(alEl.get(i).getWidth()/2)), (int)(e.getY()-(alEl.get(i).getHeight()/2)) );
+		for( int i = 0; i < this.alSommet.size(); i++ ){
+			if( alSommet.get(i).contains( new Point(e.getX(),e.getY()) ) ){
+				this.translate( i, (int)(e.getX()-(alSommet.get(i).getWidth()/2)), (int)(e.getY()-(alSommet.get(i).getHeight()/2)) );
 				break;
 			}
 		}
 	}
+	public void mouseWheelMoved(MouseWheelEvent e){
+		System.out.println("salut");
+		System.out.println("ez");
+		System.out.println("ioehozerg");
+	}
+	
 
 	public void actionPerformed(ActionEvent e) {
 		if( e.getSource() == this.addSommet ){
