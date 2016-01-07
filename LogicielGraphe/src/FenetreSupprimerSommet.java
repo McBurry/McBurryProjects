@@ -1,3 +1,11 @@
+/**
+ * Classe parrmettant de supprimer un sommet
+ * 
+ * @author Vallot Julien, Etancelin Pierre, Gourdain Loic, Florin kilian, Guelle Dylan
+ * @version 1.0
+ * 2016/01/07
+ * 
+ */
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -21,6 +29,10 @@ public class FenetreSupprimerSommet extends JFrame implements ListSelectionListe
 	private JButton ok, annuler;
 	private Sommet sSelected;
 	
+	/**
+	 * constructeur 
+	 * @param graphe
+	 */
 	public FenetreSupprimerSommet( Graphique graphe ){
 		setTitle( "Supprimer Sommet" );
 		setLayout( new GridLayout(2,2) );
@@ -29,6 +41,7 @@ public class FenetreSupprimerSommet extends JFrame implements ListSelectionListe
 		this.lSupp = new JLabel("Sommet à supprimer : ");
 		this.tabSelection = new String[this.graphe.getAlSommet().size()];
 		
+		//recuperation de tous les sommets
 		for( int i = 0; i < this.graphe.getAlSommet().size(); i++ )
 			this.tabSelection[i] = this.graphe.getAlSommet().get(i).getNom();
 		

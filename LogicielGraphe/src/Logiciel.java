@@ -1,3 +1,11 @@
+/**
+ * classe Metier 
+ * 
+ * @author Vallot Julien, Etancelin Pierre, Gourdain Loic, Florin kilian, Guelle Dylan
+ * @version 1.0
+ * 2016/01/07
+ * 
+ */
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -47,6 +55,9 @@ public class Logiciel extends JFrame implements ActionListener, KeyListener{
 	
 	private JMenuItem recharger, zoomSelection, dezoomSelection;
 	
+	/**
+	 * constructeur logiciel
+	 */
 	public Logiciel(){
 		setTitle("Logiciel");
 		setSize(500,300);
@@ -183,6 +194,9 @@ public class Logiciel extends JFrame implements ActionListener, KeyListener{
 		
 		//pack();
 		setVisible(true);
+		
+		//permet de modifier la fenetre lorsque l'on recherche un fichier pour que elle corresponde
+		// au system d'exploitation que l'utilisateur utilise sur sont pc
 		try { 
 				Locale.setDefault(new Locale("fr", "FRANCE", "WIN"));
 				UIManager.getDefaults().setDefaultLocale(new Locale("fr", "FRANCE", "WIN"));
@@ -213,20 +227,27 @@ public class Logiciel extends JFrame implements ActionListener, KeyListener{
 			FenetreNouveauArrete n = new FenetreNouveauArrete( this.graphe );
 		}
 		
+		//modifie un sommet dans le projet courant
 		if( e.getSource() == this.modifierSommet ){
 			FenetreModifierSommet n = new FenetreModifierSommet( this.graphe, null );
 		}
 		
+		//suprrime un sommet dans le projet courant
 		if( e.getSource() == this.supprimerSommet ){
 			FenetreSupprimerSommet n = new FenetreSupprimerSommet( this.graphe );
 		}
 		
+		//supprime un arrete dans le projet courant
 		if( e.getSource() == this.supprimerArrete ){
 			FenetreSupprimerArrete n = new FenetreSupprimerArrete( this.graphe );
 		}
+		
+		//perme de faire l'export en image
 		if( e.getSource() == this.exporterSousImage ){
 			graphe.exportImage();
 		}
+		
+		//permet de faire l'export sous format pdf
 		if( e.getSource() == this.exporterSousPdf ){
 			try {
 				graphe.exportPdf();
@@ -235,6 +256,8 @@ public class Logiciel extends JFrame implements ActionListener, KeyListener{
 			}
 		}
 		
+		
+		//enregistrement du projet
 		if( e.getSource() == this.enregistrer ){
 				if (currentFile == null)
 					JOptionPane.showMessageDialog(null,"Aucun projet n'est encore ouvert");

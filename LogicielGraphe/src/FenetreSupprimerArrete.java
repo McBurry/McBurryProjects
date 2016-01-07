@@ -1,3 +1,11 @@
+/**
+ * Classe permettant de supprimer arrete
+ * 
+ * @author Vallot Julien, Etancelin Pierre, Gourdain Loic, Florin kilian, Guelle Dylan
+ * @version 1.0
+ * 2016/01/07
+ * 
+ */
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,6 +30,10 @@ public class FenetreSupprimerArrete extends JFrame implements ActionListener, Li
 	
 	private Graphique graphe;
 	
+	/**
+	 * constructeur
+	 * @param graphe
+	 */
 	public FenetreSupprimerArrete( Graphique graphe ){
 		setTitle( "Fenetre Supprimer Arrete" );
 		setLayout( new GridLayout(2,2) );

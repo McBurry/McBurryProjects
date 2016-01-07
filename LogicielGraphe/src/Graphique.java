@@ -1,3 +1,11 @@
+/**
+ * Classe controleur
+ * 
+ * @author Vallot Julien, Etancelin Pierre, Gourdain Loic, Florin kilian, Guelle Dylan
+ * @version 1.0
+ * 2016/01/07
+ * 
+ */
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -74,6 +82,10 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 	private JPopupMenu popup;
 	private JMenuItem addSommet, deleteSommet, modifySommet, addArrete, deleteArrete, modifyArrete;
 	
+	/**
+	 * constructeur arbre
+	 * @param arbre
+	 */
 	public Graphique( Arbre arbre ){
 		addMouseListener(this);
 		addMouseMotionListener(this);
@@ -95,14 +107,34 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 		repaint();
 	}
 	
+	/**
+	 * accesseur sur le nombre de sommets
+	 * @return
+	 */
 	public int getNbSommet(){	return this.nbSommet;	}
+	
+	/**
+	 * accesseur sur l'ensemble des sommets
+	 * @return
+	 */
 	public ArrayList<Sommet> getAlSommet(){	return this.alSommet;	}
+	
+	/**
+	 * accesseur sur l'ensemble des arretes
+	 * @return
+	 */
 	public ArrayList<Arrete> getAlLine(){	return this.alLine;	}
 	public boolean getOriente(){	return this.oriente;	}
 	
+	/**
+	 * 
+	 * @param oriente
+	 */
 	public void setOriente( boolean oriente ){	this.oriente = oriente;	}
 	
-	//Ajoute un sommet au graphe avec des parametre par défault, puis réactualise
+	/**
+	 * Ajoute un sommet au graphe avec des parametre par défault, puis réactualise
+	 */
 	public void addSommet(){
 		this.nbSommet++;
 		Sommet e = new Sommet( Integer.toString(this.alSommet.size()+1), 50, 50, this.alSommet.get(0).getWidth(), this.alSommet.get(0).getHeight() );
@@ -110,7 +142,10 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 		repaint();
 	}
 	
-	//Ajoute au graphe le sommet passé en paramètre, puis réactualise
+	/**
+	 * Ajoute au graphe le sommet passé en paramètre, puis réactualise
+	 * @param s
+	 */
 	public void addSommet( Sommet s ){
 		this.nbSommet++;
 		this.alSommet.add( s );
@@ -118,14 +153,19 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 		repaint();
 	}
 	
-	//Ajoute au graphe l'arrete passé en paramètre, puis réactualise
+	/**
+	 * Ajoute au graphe l'arrete passé en paramètre, puis réactualise
+	 * @param a
+	 */
 	public void addArrete( Arrete a ){
 		this.alLine.add(a);
 		repaint();
 	}
 	
-	//Supprime du graphe le sommet passé en paramètre ainsi que toutes les arretes
-	//lui étant reliées
+	/**
+	 * Supprime du graphe le sommet passé en paramètre ainsi que toutes les arretes lui étant reliées
+	 * @param s
+	 */
 	public void deleteSommet( Sommet s ){
 		for( int i = 0; i < this.alSommet.size(); i++ ){
 			if( this.alSommet.get(i) == s ){
@@ -145,8 +185,11 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 		repaint();
 	}
 	
-	//Supprime du graphe l'arrete passé en paramètre et va aller supprimer
-	//cette arrete et la supprimer dans chacun des sommets qui y étaient reliés
+	/**
+	 * Supprime du graphe l'arrete passé en paramètre et va aller supprimer
+	 * cette arrete et la supprimer dans chacun des sommets qui y étaient reliés
+	 * @param a
+	 */
 	public void deleteArrete( Arrete a ){
 		for( int i = 0; i < this.alLine.size(); i++ ){
 			if( this.alLine.get(i) == a ){
@@ -165,7 +208,10 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 		repaint();
 	}
 	
-	//Permet d'enregistrer le projet en transcrivant les données du graphe dans le fichier f
+	/**
+	 * Permet d'enregistrer le projet en transcrivant les données du graphe dans le fichier f
+	 * @param f
+	 */
 	public void enregistrerSous( File f ){
 		
 		this.tabLiaisons = new boolean[this.nbSommet][this.nbSommet];
@@ -219,8 +265,11 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 		
 	}
 	
-	//Cette méthode permet de récupérer les données du fichier ayant pour chemin la variable chemin
-	//Puis elle ajoute ces données au graphe actuel
+	/**
+	 * Cette méthode permet de récupérer les données du fichier ayant pour chemin la variable chemin
+	 * Puis elle ajoute ces données au graphe actuel
+	 * @param chemin
+	 */
 	public void initFichier( String chemin ){
 		this.graphiqueHeight = dim.width; // Récupère la hauteur de la zone graphique
 		this.graphiqueWidth = dim.height; // Récupère la largeur de la zone graphique
@@ -310,8 +359,13 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 		this.arbre.maj();
 	}
 	
-	//Cette méthode permet de déplacer un Sommet vers une position
-	//Elle déplace aussi par la même occasion les Arretes qui y sont reliés
+	/**
+	 * Cette méthode permet de déplacer un Sommet vers une position
+	 * Elle déplace aussi par la même occasion les Arretes qui y sont reliés
+	 * @param nb
+	 * @param x
+	 * @param y
+	 */
 	public void translate( int nb, int x, int y ){
 		Sommet e = this.alSommet.get(nb);
 		int centerX = e.getCenterX();
@@ -333,6 +387,12 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 		repaint();
 	}
 	
+	/**
+	 * Cette methode permet de pouvoir changer la taille des sommets, lors des deplacements
+	 * @param nb
+	 * @param largeur
+	 * @param hauteur
+	 */
 	public void changeSize( int nb, int largeur, int hauteur ){
 		Sommet e = this.alSommet.get(nb);
 		int centerX = e.getCenterX();
@@ -354,7 +414,11 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 		repaint();
 	}
 	
-	//Permet de créer un objet Arrete en le reliant avec deux Sommets
+	/**
+	 * Permet de créer un objet Arrete en le reliant avec deux Sommets
+	 * @param e1
+	 * @param e2
+	 */
 	public void createArrete( Sommet e1, Sommet e2 ){
 		Arrete l = new Arrete( e1, e2 );
 		e1.getAlArrete().add(l);
@@ -362,7 +426,12 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 		this.alLine.add(l);
 	}
 	
-	//Permet de créer un objet Arrete orienté en le reliant avec deux Sommets
+	/**
+	 * Permet de créer un objet Arrete orienté en le reliant avec deux Sommets
+	 * @param e1
+	 * @param e2
+	 * @param dir
+	 */
 	public void createArrete( Sommet e1, Sommet e2, ArrayList<Sommet> dir ){
 		Arrete l = new Arrete( e1, e2, dir );
 		e1.getAlArrete().add(l);
@@ -371,9 +440,11 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 		repaint();
 	}
 	
-	//Crée un nouveau graphe
-	//Cette méthode est appelé par la classe FenetreNouveauProjet
-	//Car elle permet par la même occasion de réinitialiser la fenetre
+	/**
+	 * Crée un nouveau graphe
+	 * Cette méthode est appelé par la classe FenetreNouveauProjet
+	 * Car elle permet par la même occasion de réinitialiser la fenetre
+	 */
 	public void newGraphique(){
 		this.nbSommet = 0;
 		this.alSommet = new ArrayList<Sommet>();
@@ -383,6 +454,9 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 		repaint();
 	}
 	
+	/**
+	 * Cette methode est la methode permettant de pouvoir gérer les export au format image "png"
+	 */
 	public void exportImage(){
 		File fileToSave = null;
         try{
@@ -407,6 +481,11 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 		}
 	}
 	
+	
+	/**
+	 * methode qui gère l'export au format pdf
+	 * @throws DocumentException
+	 */
 	public void exportPdf() throws DocumentException{
 		String fileToSave = null;
         try{
@@ -443,6 +522,10 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 		}
 	}
 	
+	/**
+	 * methode graphique qui permet l'affichage des sommets et des arretes dans le graphe
+	 * @param g
+	 */
 	public void paintComponent( Graphics g ){
 		this.g2 = (Graphics2D) g;
 		super.paintComponent(g);
@@ -470,6 +553,10 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 		}
 	}
 
+	/**
+	 * methode permettant de savoir quand est ce que l'on clique avec la souris sur un sommet
+	 * et gère aussi la selection du sommet en le selectionnant d'une couleur bleu
+	 */
 	public void mouseClicked	(MouseEvent e) {
 		if( e.getButton() == MouseEvent.BUTTON1 ){
 			if( !this.keyPressed.contains( KeyEvent.VK_SHIFT) ){
@@ -487,6 +574,7 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 			}
 			repaint();
 		}
+		
 		if( e.getButton() == MouseEvent.BUTTON3 ){
 			this.popup = new JPopupMenu();
 			this.popup.add( this.addSommet = new JMenuItem("Ajouter Sommet") );
@@ -495,6 +583,7 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 				if( alSommet.get(i).contains( new Point(e.getX(),e.getY()) ) ){
 					this.popup.add( this.modifySommet = new JMenuItem("Modifier Sommet") );
 					this.popup.add( this.deleteSommet = new JMenuItem("Supprimer Sommet") );
+					this.modifySommet.addActionListener(this);
 					this.deleteSommet.addActionListener(this);
 					break;
 				}
@@ -511,10 +600,17 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 	public void mouseReleased	(MouseEvent e) {}
 	
 	public void resetKeyPressed() {	this.keyPressed = new ArrayList<Integer>();	}
+	
+	/**
+	 * 
+	 * @param i
+	 */
 	public void setKeyPressed( int  i ) {	this.keyPressed.add(i);	}
 	
-	//Est appelé à chaque glissement de souris avec clic enfoncé
-	//Elle permet de déplacer un sommet en regardant si la souris est dans le sommet
+	/**
+	 * Est appelé à chaque glissement de souris avec clic enfoncé
+	 * Elle permet de déplacer un sommet en regardant si la souris est dans le sommet
+	 */
 	public void mouseDragged	(MouseEvent e){
 		for( int i = 0; i < this.alSommet.size(); i++ ){
 			if( alSommet.get(i).contains( new Point(e.getX(),e.getY()) ) ){
@@ -523,6 +619,8 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 			}
 		}
 	}
+	
+	// methode temporaire, normalement utilisé pour le zoom grace a la molette de la souris
 	public void mouseWheelMoved(MouseWheelEvent e){
 		System.out.println("salut");
 		System.out.println("ez");
@@ -531,12 +629,18 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 	
 
 	public void actionPerformed(ActionEvent e) {
+		
+		//permet d'ajouter un nouveau sommet à partir du clique droit
 		if( e.getSource() == this.addSommet ){
 			FenetreNouveauSommet n = new FenetreNouveauSommet( this );
 		}
+		
+		//permet de modifier un sommet selectionné à partir du clique droit
 		if( e.getSource() == this.modifySommet ){
 			FenetreModifierSommet n = new FenetreModifierSommet( this, this.selectedSommet );
 		}
+		
+		//permet de supprimer un sommet selectionné à partir du clique droit
 		if( e.getSource() == this.deleteSommet ){
 			for( int i = 0; i < this.selectedSommet.size(); i++ )
 				this.deleteSommet( this.selectedSommet.get(i) );

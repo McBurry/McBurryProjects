@@ -1,3 +1,11 @@
+/**
+ * Classe permettant la creation d'un nouveau sommet 
+ * 
+ * @author Vallot Julien, Etancelin Pierre, Gourdain Loic, Florin kilian, Guelle Dylan
+ * @version 1.0
+ * 2016/01/07
+ * 
+ */
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -17,6 +25,10 @@ public class FenetreNouveauSommet extends JFrame implements ActionListener{
 	private JLabel lNom, lX, lY, lWidth, lHeight;
 	private JButton ok, annuler;
 	
+	/**
+	 * constructeur
+	 * @param graphe
+	 */
 	public FenetreNouveauSommet( Graphique graphe ){
 		setTitle("Nouveau Sommet");
 		this.graphe = graphe;

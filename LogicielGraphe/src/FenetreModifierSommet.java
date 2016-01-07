@@ -1,3 +1,11 @@
+/**
+ * Classe permettant de modifier un sommet
+ * 
+ * @author Vallot Julien, Etancelin Pierre, Gourdain Loic, Florin kilian, Guelle Dylan
+ * @version 1.0
+ * 2016/01/07
+ * 
+ */
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -27,6 +35,12 @@ public class FenetreModifierSommet extends JFrame implements ActionListener, Lis
 	private ArrayList<Sommet> selection;
 	private int selectedSommet;
 	
+	
+	/**
+	 * constructeur
+	 * @param graphe
+	 * @param selection
+	 */
 	public FenetreModifierSommet( Graphique graphe, ArrayList<Sommet> selection ){
 		setTitle("Modifier Sommet");
 		this.graphe = graphe;

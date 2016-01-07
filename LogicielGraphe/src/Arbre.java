@@ -1,3 +1,11 @@
+/**
+ * Classe initialisant l'arbre contenant la liste des composants du graphe
+ * 
+ * @author Vallot Julien, Etancelin Pierre, Gourdain Loic, Florin kilian, Guelle Dylan
+ * @version 1.0
+ * 2016/01/07
+ * 
+ */
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Label;
@@ -17,6 +25,9 @@ public class Arbre extends JPanel implements ActionListener{
 	
 	private int nombre;
 	
+	/**
+	 * constructeur arbre
+	 */
 	public Arbre(){
 		setLayout( new GridLayout(1,2) );
 		this.alJButton = new ArrayList<JButton>();
@@ -24,14 +35,25 @@ public class Arbre extends JPanel implements ActionListener{
 		this.nombre = this.alJButton.size();
 	}
 	
+	/**
+	 * initialisation de tous les sommets
+	 * @param alSommet
+	 */
 	public void setAlSommet( ArrayList<Sommet> alSommet ){
 		this.alSommet = alSommet;
 	}
 	
+	/**
+	 * initialisation de toutes les arretes
+	 * @param alArrete
+	 */
 	public void setAlArrete( ArrayList<Arrete> alArrete ){
 		this.alArrete = alArrete;
 	}
 	
+	/**
+	 * permet de creer des boutons avec le nom de chaque sommet en fonction du nombre de sommet creer
+	 */
 	public void maj(){
 		removeAll();		
 		setLayout( new GridLayout(this.nombre,2,10,10) );
@@ -40,7 +62,7 @@ public class Arbre extends JPanel implements ActionListener{
 		
 		this.alJButton = new ArrayList<JButton>();
 		this.isSelected = new ArrayList<Sommet>();
-		
+		// creation et placement des boutons avec un + 
 		for( int i = 0; i < this.alSommet.size(); i++ ){
 			JButton b = new JButton("+");
 			b.setPreferredSize( new Dimension(45,20) );
@@ -53,6 +75,7 @@ public class Arbre extends JPanel implements ActionListener{
 	}
 	
 	public void actionPerformed(ActionEvent e) {
+		// permet de gérer l'inversion du + et du - sur les boutons 
 		for( int i = 0; i < this.alJButton.size(); i++ ){
 			if( e.getSource() == this.alJButton.get(i) ){
 				if( this.isSelected.contains( this.alSommet.get(i) ) ){
