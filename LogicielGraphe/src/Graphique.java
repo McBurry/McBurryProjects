@@ -76,7 +76,7 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 	private boolean oriente = false;
 	
 	private JPopupMenu popup;
-	private JMenuItem addSommet, deleteSommet, modifySommet, addArrete, deleteArrete, modifyArrete;
+	private JMenuItem addSommet, deleteSommet, modifySommet, addArrete, deleteArrete, modifyArrete, relieParArrete;
 	
 	public Graphique( Arbre arbre ){
 		addMouseListener(this);
@@ -337,8 +337,8 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 		this.alSommet.addAll( alTemp );
 		
 		this.arbre.setAlSommet( this.alSommet );
-		repaint();
 		this.arbre.maj();
+		repaint();
 	}
 	
 	//Cette méthode permet de déplacer un Sommet vers une position
@@ -391,6 +391,7 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 		e1.getAlArrete().add(l);
 		e2.getAlArrete().add(l);
 		this.alLine.add(l);
+		repaint();
 	}
 	
 	//Permet de créer un objet Arrete orienté en le reliant avec deux Sommets
@@ -541,6 +542,11 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 				if( alSommet.get(i).contains( new Point(e.getX(),e.getY()) ) ){
 					this.popup.add( this.modifySommet = new JMenuItem("Modifier Sommet") );
 					this.popup.add( this.deleteSommet = new JMenuItem("Supprimer Sommet") );
+					if( !this.oriente ){
+						this.popup.add( this.relieParArrete = new JMenuItem("Relie avec des Arretes") );
+						this.relieParArrete.addActionListener(this);
+					}
+					this.modifySommet.addActionListener(this);
 					this.deleteSommet.addActionListener(this);
 					break;
 				}
@@ -585,6 +591,14 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 		if( e.getSource() == this.deleteSommet ){
 			for( int i = 0; i < this.selectedSommet.size(); i++ )
 				this.deleteSommet( this.selectedSommet.get(i) );
+		}
+		if( e.getSource() == this.relieParArrete ){
+			if( !this.oriente ){
+				for( int i = 1; i < this.selectedSommet.size(); i++ )
+					this.createArrete( this.selectedSommet.get(i-1), this.selectedSommet.get(i));
+				
+				this.createArrete( this.selectedSommet.get(0), this.selectedSommet.get(this.selectedSommet.size()-1));
+			}
 		}
 		System.out.println("qzdqz");
 	}

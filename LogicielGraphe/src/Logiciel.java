@@ -53,6 +53,19 @@ public class Logiciel extends JFrame implements ActionListener, KeyListener{
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		addKeyListener(this);
 		
+		this.total = new JPanel();
+		this.total.setLayout( new BorderLayout() );
+		
+		this.arbre = new Arbre();
+		this.graphe = new Graphique(this.arbre);
+		//this.graphe.initFichier( "init.txt" );
+		
+		this.total.add( this.graphe );
+		
+		add( this.total, "Center" );
+		
+		add(this.arbre,"West");
+		
 		this.menu = new JMenuBar();
 		setJMenuBar(menu);
 		
@@ -86,14 +99,15 @@ public class Logiciel extends JFrame implements ActionListener, KeyListener{
 		this.nouveau = new JMenu("Nouveau");
 		this.nouveauGraphe = new JMenuItem("Nouveau Graphe");
 		this.nouveauSommet = new JMenuItem("Nouveau Sommet");
-		this.nouveauArrete = new JMenuItem("Nouveau Arrete");
+		this.nouveauArrete = new JMenuItem("Nouveau Arrete/Arc");
 		this.nouveauArc = new JMenuItem("Nouveau Arc");
 		this.nouveauChemin = new JMenuItem("Nouveau Chemin");
 		
 		this.nouveau.add( this.nouveauGraphe );
 		this.nouveau.add( this.nouveauSommet );
 		this.nouveau.add( this.nouveauArrete );
-		this.nouveau.add( this.nouveauArc );
+		//if( !this.graphe.getOriente() )	this.nouveau.add( this.nouveauArrete );
+		//else	this.nouveau.add( this.nouveauArc );
 		this.nouveau.add( this.nouveauChemin );
 		
 		this.nouveauGraphe.addActionListener(this);
@@ -105,7 +119,7 @@ public class Logiciel extends JFrame implements ActionListener, KeyListener{
 		this.modifier = new JMenu("Modifier");
 			
 		this.modifierSommet = new JMenuItem("Modifier Sommet");
-		this.modifierArrete = new JMenuItem("Modifier Arrete");
+		this.modifierArrete = new JMenuItem("Modifier Arrete/Arc");
 		this.modifierArc = new JMenuItem("Modifier Arc");
 		this.modifierChemin = new JMenuItem("Modifier Chemin");
 		
@@ -116,13 +130,14 @@ public class Logiciel extends JFrame implements ActionListener, KeyListener{
 		
 		this.modifier.add( this.modifierSommet );
 		this.modifier.add( this.modifierArrete );
-		this.modifier.add( this.modifierArc );
+		//if( !this.graphe.getOriente() )	this.modifier.add( this.modifierArrete );
+		//else	this.modifier.add( this.modifierArc );
 		this.modifier.add( this.modifierChemin );
 		
 		this.supprimer = new JMenu("Supprimer");
 		
 		this.supprimerSommet = new JMenuItem("Supprimer Sommet");
-		this.supprimerArrete = new JMenuItem("Supprimer Arrete");
+		this.supprimerArrete = new JMenuItem("Supprimer Arrete/Arc");
 		this.supprimerArc = new JMenuItem("Supprimer Arc");
 		this.supprimerChemin = new JMenuItem("Supprimer Chemin");
 		
@@ -133,7 +148,8 @@ public class Logiciel extends JFrame implements ActionListener, KeyListener{
 		
 		this.supprimer.add( this.supprimerSommet );
 		this.supprimer.add( this.supprimerArrete );
-		this.supprimer.add( this.supprimerArc );
+		//if( !this.graphe.getOriente() )	this.supprimer.add( this.supprimerArrete );
+		//else	this.supprimer.add( this.supprimerArc );
 		this.supprimer.add( this.supprimerChemin );
 		
 		this.retourArriere = new JMenuItem("Retour Arriere");
@@ -168,19 +184,6 @@ public class Logiciel extends JFrame implements ActionListener, KeyListener{
 		
 		this.menu.add( this.affichage );
 		
-		this.total = new JPanel();
-		this.total.setLayout( new BorderLayout() );
-		
-		this.arbre = new Arbre();
-		this.graphe = new Graphique(this.arbre);
-		//this.graphe.initFichier( "init.txt" );
-		
-		this.total.add( this.graphe );
-		
-		add( this.total, "Center" );
-		
-		add(this.arbre,"West");
-		
 		//pack();
 		setVisible(true);
 		try { 
@@ -209,7 +212,7 @@ public class Logiciel extends JFrame implements ActionListener, KeyListener{
 		}
 		
 		//Crée une nouvelle arrete en les reliants entre deux sommets
-		if( e.getSource() == this.nouveauArrete ){
+		if( e.getSource() == this.nouveauArrete || e.getSource() == this.nouveauArc ){
 			FenetreNouveauArrete n = new FenetreNouveauArrete( this.graphe );
 		}
 		
@@ -221,7 +224,7 @@ public class Logiciel extends JFrame implements ActionListener, KeyListener{
 			FenetreSupprimerSommet n = new FenetreSupprimerSommet( this.graphe );
 		}
 		
-		if( e.getSource() == this.supprimerArrete ){
+		if( e.getSource() == this.supprimerArrete || e.getSource() == this.supprimerArc ){
 			FenetreSupprimerArrete n = new FenetreSupprimerArrete( this.graphe );
 		}
 		if( e.getSource() == this.exporterSousImage ){
