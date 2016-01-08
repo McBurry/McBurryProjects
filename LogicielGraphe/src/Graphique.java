@@ -190,7 +190,6 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 					if( this.alSommet.get(j) == this.alLine.get(i).getSommet1() && this.alSommet.get(k) == this.alLine.get(i).getSommet2() ){
 						if( this.alLine.get(i).getAlDirection().contains( this.alSommet.get(j) ) )	this.tabLiaisons[j][k] = true;
 						if( this.alLine.get(i).getAlDirection().contains( this.alSommet.get(k) ) )	this.tabLiaisons[k][j] = true;
-						//this.tabLiaisons[j][k] = true;
 					}
 				}
 			}
@@ -205,10 +204,11 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 			
 			//Liste de paramètre du graphe
 			s += "oriente:" + this.getOriente() + "\n";
+			s += "name:" + Logiciel.nomProjet + "\n";
 			s += "size:" + this.alSommet.size() + "\n";
 			s += "carac:\n";
 			for( int i = 0; i < this.alSommet.size(); i++ )
-				s+= "x:"+this.alSommet.get(i).getX()+";y:"+this.alSommet.get(i).getY()+";w:"+this.alSommet.get(i).getWidth()+";h:"+this.alSommet.get(i).getHeight()+"\n";
+				s+= "n:"+this.alSommet.get(i).getNom()+";x:"+this.alSommet.get(i).getX()+";y:"+this.alSommet.get(i).getY()+";w:"+this.alSommet.get(i).getWidth()+";h:"+this.alSommet.get(i).getHeight()+"\n";
 			
 			for( int i = 0; i < this.tabLiaisons.length; i++ ){
 				for( int j = 0; j < this.tabLiaisons.length; j++ ){
@@ -237,7 +237,7 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 		this.graphiqueHeight = dim.width; // Récupère la hauteur de la zone graphique
 		this.graphiqueWidth = dim.height; // Récupère la largeur de la zone graphique
 		int nbS = 0;
-		int[][] tabCarac = new int[0][0];
+		String[][] tabCarac = new String[0][0];
 		
 		try{
 			FileReader fr = new FileReader( chemin );
@@ -248,6 +248,13 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 			if( oriente.contains("true") )	this.setOriente(true);
 			else	this.setOriente(false);
 			
+			//Initialise le nom du projet
+			String name = sc.next();
+			if( name.contains("name") ){
+				name = name.replace("name:","");
+				Logiciel.nomProjet = name;
+			}
+			
 			//Initialise le nombre de sommets
 			String size = sc.next();
 			if( size.contains("size") ){
@@ -257,15 +264,16 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 			
 			//Initialise un tableau les carac des sommets
 			if( sc.next().contains("carac") ){
-				tabCarac = new int[nbS][4];
+				tabCarac = new String[nbS][5];
 				for( int i = 0; i < nbS; i++ ){
 					String[] line = sc.next().split(";");
 					for( int j = 0; j < line.length; j++ ){
+						line[j] = line[j].replace("n:","");
 						line[j] = line[j].replace("x:","");
 						line[j] = line[j].replace("y:","");
 						line[j] = line[j].replace("w:","");
 						line[j] = line[j].replace("h:","");
-						tabCarac[i][j] = Integer.parseInt(line[j]);
+						tabCarac[i][j] = line[j];
 					}
 				}
 			}
@@ -301,7 +309,7 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 		//Sommets
 		ArrayList<Sommet> alTemp = new ArrayList<Sommet>();
 		for( int i = 0; i < nbS; i++ ){
-			alTemp.add( new Sommet( Integer.toString(i), tabCarac[i][0], tabCarac[i][1], tabCarac[i][2], tabCarac[i][3] ) );
+			alTemp.add( new Sommet( tabCarac[i][0], Integer.parseInt(tabCarac[i][1]), Integer.parseInt(tabCarac[i][2]), Integer.parseInt(tabCarac[i][3]), Integer.parseInt(tabCarac[i][3]) ) );
 		}
 		//Arretes
 		for( int k = 0; k < this.tabLiaisons.length; k++ ){
