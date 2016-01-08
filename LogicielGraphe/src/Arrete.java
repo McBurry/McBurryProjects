@@ -1,11 +1,3 @@
-/**
- * Classe permettant la creation des arretes
- * 
- * @author Vallot Julien, Etancelin Pierre, Gourdain Loic, Florin kilian, Guelle Dylan
- * @version 1.0
- * 2016/01/07
- * 
- */
 import java.awt.Color;
 import java.awt.Polygon;
 import java.awt.geom.Line2D;
@@ -26,11 +18,6 @@ public class Arrete extends JPanel {
 	
 	private String nom = "";
 
-	/**
-	 * premier constructeur arrete qui gère les arretes pour les graphe non orientés
-	 * @param s1
-	 * @param s2
-	 */
 	public Arrete( Sommet s1, Sommet s2 ) {
 		this.s1 = s1;
 		this.s2 = s2;
@@ -45,12 +32,6 @@ public class Arrete extends JPanel {
 		this.direction = new ArrayList<Sommet>();
 	}
 	
-	/**
-	 * deuxieme constructeur de projet qui gère les arretes pour les graphes orientés
-	 * @param s1
-	 * @param s2
-	 * @param direction
-	 */
 	public Arrete( Sommet s1, Sommet s2, ArrayList<Sommet> direction ){
 		this(s1, s2);
 		this.direction = direction;
@@ -58,11 +39,6 @@ public class Arrete extends JPanel {
 			this.alPol.add(new Polygon( this.getTriangleX(this.direction.get(i)), this.getTriangleY(this.direction.get(i)), 3 ));
 	}
 	
-	/**
-	 * 
-	 * @param s
-	 * @return
-	 */
 	public int[] getTriangleX( Sommet s ){
 		double angle = 0;
 		int x = 0;
@@ -87,11 +63,6 @@ public class Arrete extends JPanel {
 		return tab;
 	}
 	
-	/**
-	 * 
-	 * @param s
-	 * @return
-	 */
 	public int[] getTriangleY( Sommet s ){
 		double angle = 0;
 		int y = 0;
@@ -116,10 +87,7 @@ public class Arrete extends JPanel {
 		return tab;
 	}
 	
-	/**
-	 * formule Utiliser Y = arccos[(a*a + b*b + c*c) / 2ab ]
-	 * @return
-	 */
+	//Utiliser Y = arccos[(a*a + b*b + c*c) / 2ab ]
 	public Double getOrientationVersS2(){
 		double c = this.s2.getCenterX() - this.s1.getCenterX();
 		double a = this.s2.getCenterY() - this.s1.getCenterY();
@@ -133,10 +101,6 @@ public class Arrete extends JPanel {
 		return angleArrete;
 	}
 	
-	/**
-	 * 
-	 * @return
-	 */
 	public Double getOrientationVersS1(){
 		double c = this.s2.getCenterX() - this.s1.getCenterX();
 		double a = this.s2.getCenterY() - this.s1.getCenterY();
@@ -153,6 +117,7 @@ public class Arrete extends JPanel {
 	public Line2D getLine2D(){	return this.l;	}
 	public ArrayList<Polygon> getAlPolygon(){	return this.alPol;	}
 	public ArrayList<Sommet> getAlSommet(){	return this.alSommet;	}
+	public ArrayList<Sommet> getAlDirection(){	return this.direction;	}
 
 	public String getNom(){	return this.nom;	}
 	public int getX1() {	return x1;	}
@@ -162,10 +127,6 @@ public class Arrete extends JPanel {
 	public Sommet getSommet1(){	return this.s1;	}
 	public Sommet getSommet2(){	return this.s2;	}
 	
-	/**
-	 * 
-	 * @param x1
-	 */
 	public void setX1(int x1){
 		this.x1 = x1;
 		this.l = new Line2D.Double( this.x1, this.y1, this.x2, this.y2 );
@@ -174,10 +135,6 @@ public class Arrete extends JPanel {
 			this.alPol.add(new Polygon( this.getTriangleX(this.direction.get(i)), this.getTriangleY(this.direction.get(i)), 3 ));
 	}
 	
-	/**
-	 * 
-	 * @param y1
-	 */
 	public void setY1(int y1){
 		this.y1 = y1;
 		this.l = new Line2D.Double( this.x1, this.y1, this.x2, this.y2 );
@@ -186,9 +143,6 @@ public class Arrete extends JPanel {
 			this.alPol.add(new Polygon( this.getTriangleX(this.direction.get(i)), this.getTriangleY(this.direction.get(i)), 3 ));
 	}
 	
-	/**
-	 * lol
-	 */
 	public void setX2(int x2){
 		this.x2 = x2;
 		this.l = new Line2D.Double( this.x1, this.y1, this.x2, this.y2 );
@@ -197,10 +151,6 @@ public class Arrete extends JPanel {
 			this.alPol.add(new Polygon( this.getTriangleX(this.direction.get(i)), this.getTriangleY(this.direction.get(i)), 3 ));
 	}
 	
-	/**
-	 * 
-	 * @param y2
-	 */
 	public void setY2(int y2){
 		this.y2 = y2;
 		this.l = new Line2D.Double( this.x1, this.y1, this.x2, this.y2 );
@@ -209,15 +159,6 @@ public class Arrete extends JPanel {
 			this.alPol.add(new Polygon( this.getTriangleX(this.direction.get(i)), this.getTriangleY(this.direction.get(i)), 3 ));
 	}
 	
-	/**
-	 * mutateur sur une couleur 
-	 * @param c
-	 */
 	public void setColor( Color c )	{	this.color = c;		}
-	
-	/**
-	 * accesseur sur couleur 
-	 * @return
-	 */
 	public Color getColor()			{	return this.color;	}
 }

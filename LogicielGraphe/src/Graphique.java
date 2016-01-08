@@ -24,6 +24,7 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -35,16 +36,19 @@ import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Font;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.PageSize;
-
+import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfWriter;
 
 public class Graphique extends JPanel implements ActionListener, MouseListener, MouseMotionListener,MouseWheelListener{
@@ -211,7 +215,7 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 	 */
 	public void enregistrerSous( File f ){
 		
-		this.tabLiaisons = new boolean[this.nbSommet][this.nbSommet];
+		this.tabLiaisons = new boolean[this.alSommet.size()][this.alSommet.size()];
 		
 		//Instancie toutes les cases du tableau des liaisons à false pour pouvoir venir
 		//Mettre à true les laisons entre les sommets
@@ -227,8 +231,9 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 			for( int j = 0; j < this.alSommet.size(); j++ ){
 				for( int k = 0; k < this.alSommet.size(); k++ ){
 					if( this.alSommet.get(j) == this.alLine.get(i).getSommet1() && this.alSommet.get(k) == this.alLine.get(i).getSommet2() ){
-						this.tabLiaisons[k][j] = true;
-						this.tabLiaisons[j][k] = true;
+						if( this.alLine.get(i).getAlDirection().contains( this.alSommet.get(j) ) )	this.tabLiaisons[j][k] = true;
+						if( this.alLine.get(i).getAlDirection().contains( this.alSommet.get(k) ) )	this.tabLiaisons[k][j] = true;
+						//this.tabLiaisons[j][k] = true;
 					}
 				}
 			}
@@ -240,7 +245,14 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 			FileWriter fw = new FileWriter( f );
 			BufferedWriter bw = new BufferedWriter(fw);
 			String s = "";
-			s += "oriente:" + this.getOriente();
+			
+			//Liste de paramètre du graphe
+			s += "oriente:" + this.getOriente() + "\n";
+			s += "size:" + this.alSommet.size() + "\n";
+			s += "carac:\n";
+			for( int i = 0; i < this.alSommet.size(); i++ )
+				s+= "x:"+this.alSommet.get(i).getX()+";y:"+this.alSommet.get(i).getY()+";w:"+this.alSommet.get(i).getWidth()+";h:"+this.alSommet.get(i).getHeight()+"\n";
+			
 			for( int i = 0; i < this.tabLiaisons.length; i++ ){
 				for( int j = 0; j < this.tabLiaisons.length; j++ ){
 					if( j == this.tabLiaisons.length-1 ){
@@ -270,31 +282,49 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 	public void initFichier( String chemin ){
 		this.graphiqueHeight = dim.width; // Récupère la hauteur de la zone graphique
 		this.graphiqueWidth = dim.height; // Récupère la largeur de la zone graphique
+		int nbS = 0;
+		int[][] tabCarac = new int[0][0];
 		
 		try{
 			FileReader fr = new FileReader( chemin );
 			Scanner sc = new Scanner ( fr );
 			
+			//identifie si le graphe est orienté ou non
 			String oriente = sc.next();
 			if( oriente.contains("true") )	this.setOriente(true);
 			else	this.setOriente(false);
 			
-			String s = sc.next();
-			String[] tab = s.split(";");
+			//Initialise le nombre de sommets
+			String size = sc.next();
+			if( size.contains("size") ){
+				size = size.replace("size:","");
+				nbS = Integer.parseInt(size);
+			}
+			
+			//Initialise un tableau les carac des sommets
+			if( sc.next().contains("carac") ){
+				tabCarac = new int[nbS][4];
+				for( int i = 0; i < nbS; i++ ){
+					String[] line = sc.next().split(";");
+					for( int j = 0; j < line.length; j++ ){
+						line[j] = line[j].replace("x:","");
+						line[j] = line[j].replace("y:","");
+						line[j] = line[j].replace("w:","");
+						line[j] = line[j].replace("h:","");
+						tabCarac[i][j] = Integer.parseInt(line[j]);
+					}
+				}
+			}
+			
+			//Initialise la taille du tableau en fonction du nombre de Sommet dans la matrice
+			this.tabLiaisons = new boolean[nbS][nbS];
 			int cpt = 0;
-			this.nbSommet = tab.length;
-			
-			//Initialise la taille en fonction du nombre de Sommet dans la matrice
-			this.tabLiaisons = new boolean[this.nbSommet][this.nbSommet];
-			
-			fr = new FileReader( chemin );
-			sc = new Scanner ( fr );
 			
 			//Initialise le tableau de relations entre les sommets en parcourant le scanner
 			//Tous les 1 sont retranscrit en true et 0 en false
 			while ( sc.hasNext() ){
-				s = sc.nextLine();
-				tab = s.split(";");
+				String s = sc.next();
+				String[] tab = s.split(";");
 				
 				for( int i = 0; i < tab.length; i++ ){
 					if( tab[i].equals("1") )
@@ -312,44 +342,37 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 			e.printStackTrace();
 		}
 		
-		int sqrt = (int)(Math.ceil(Math.sqrt(this.nbSommet))); // Récupère le nombre de ligne de sommets
+		int sqrt = (int)(Math.ceil(Math.sqrt(nbS))); // Récupère le nombre de ligne de sommets
 		
-		//Va parcourrir l'ArrayList de Sommets indirectement sous forme de tableau a deux dimensions
-		//Va instancier chacun de ces Sommets sous forme de tableau a deux dimensions
-		//Puis va initialiser une arrete entre les Sommets devant être relié
-		for( int i = 0; i < sqrt; i++ ){
-			for( int j = 0; j < sqrt; j++ ){
-				//Cree un sommet pour chaque NbSommet
-				if( this.alSommet.size() < this.nbSommet ){
-					Sommet e = new Sommet( Integer.toString(i*sqrt+j+1), (this.graphiqueHeight/sqrt)*i, (this.graphiqueWidth/sqrt)*j, (int)(Math.min(this.graphiqueHeight/sqrt, this.graphiqueWidth/sqrt) *0.8), (int)(Math.min(this.graphiqueHeight/sqrt, this.graphiqueWidth/sqrt) *0.8) );
-					this.alSommet.add((int)(i*sqrt+j),e);
+		//Sommets
+		ArrayList<Sommet> alTemp = new ArrayList<Sommet>();
+		for( int i = 0; i < nbS; i++ ){
+			alTemp.add( new Sommet( Integer.toString(i), tabCarac[i][0], tabCarac[i][1], tabCarac[i][2], tabCarac[i][3] ) );
+		}
+		//Arretes
+		for( int k = 0; k < this.tabLiaisons.length; k++ ){
+			for( int l = 0; l < this.tabLiaisons.length; l++ ){
+				if( !this.getOriente() ){
+					if( this.tabLiaisons[l][k] && this.tabLiaisons[k][l] )
+						this.createArrete(alTemp.get(l), alTemp.get(k));
 				}
-				//Cree une Arrete entre deux Sommets qui ont chacun true l'un vers l'autre
-				//dans this.tabLiaisons
-				for( int k = 0; k < this.alSommet.size()-1; k++ ){
-					if( !this.getOriente() ){
-						if( this.tabLiaisons[this.alSommet.size()-1][k] && this.tabLiaisons[k][this.alSommet.size()-1] )
-							this.createArrete(this.alSommet.get(k), this.alSommet.get(this.alSommet.size()-1));
-					}
-					else{
-						ArrayList<Sommet> dir = new ArrayList<Sommet>();
-						if( this.tabLiaisons[this.alSommet.size()-1][k] ){
-							dir.add(this.alSommet.get(k));
-							this.createArrete(this.alSommet.get(k), this.alSommet.get(this.alSommet.size()-1), dir);
+				else{
+					ArrayList<Sommet> dir = new ArrayList<Sommet>();
+					
+					if(this.tabLiaisons[l][k] || this.tabLiaisons[k][l] ){
+						if( this.tabLiaisons[l][k] ){
+							dir.add(alTemp.get(l));
 						}
-						if( this.tabLiaisons[this.alSommet.size()-1][k] ){
-							dir.add(this.alSommet.get(this.alSommet.size()-1));
-							this.createArrete(this.alSommet.get(k), this.alSommet.get(this.alSommet.size()-1), dir);
+						if( this.tabLiaisons[k][l] ){
+							dir.add(alTemp.get(k));
 						}
-						if( this.tabLiaisons[this.alSommet.size()-1][k] && this.tabLiaisons[k][this.alSommet.size()-1] ){
-							dir.add(this.alSommet.get(k));
-							dir.add(this.alSommet.get(this.alSommet.size()-1));
-							this.createArrete(this.alSommet.get(k), this.alSommet.get(this.alSommet.size()-1), dir);
-						}
+						this.createArrete(alTemp.get(l), alTemp.get(k), dir );
 					}
 				}
 			}
 		}
+		
+		this.alSommet.addAll( alTemp );
 		
 		this.arbre.setAlSommet( this.alSommet );
 		repaint();
@@ -468,7 +491,7 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
     			fileToSave = fileChooser.getSelectedFile();
     			if (!fileToSave.getPath().contains(".png"))
     				fileToSave = new File(fileToSave.getPath() + ".png");
-    		}
+    		}else{return;}
 			g2 = bufferedImage.createGraphics();
 			paintAll(g2);
 	        ImageIO.write(bufferedImage, "png", fileToSave);
@@ -494,7 +517,7 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
     			fileToSave = fileChooser.getSelectedFile().toString();
     			if (!fileToSave.contains(".pdf"))
     				fileToSave += ".pdf";
-    		}
+    		}else{return;}
     		
 			g2 = bufferedImage.createGraphics();
 	        Document document = new Document(PageSize.A4);
@@ -514,9 +537,67 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
             document.addTitle("Importation du graph "+ Logiciel.nomProjet);
             document.open();
             document.add(iTextImage);
+            document.add(new Paragraph("Structures du graphe: ", new Font(Font.FontFamily.TIMES_ROMAN, 16, Font.BOLD)));
+            Paragraph p1 = new Paragraph();
+            p1.setAlignment(Image.ALIGN_CENTER);
+            
+    		for( int i = 0; i < this.tabLiaisons.length; i++ ){
+    			for( int j = 0; j < this.tabLiaisons.length; j++ ){
+    				this.tabLiaisons[i][j] = false;
+    			}
+    		}
+    		
+    		for( int i = 0; i < this.alLine.size(); i++ ){
+    			for( int j = 0; j < this.alSommet.size(); j++ ){
+    				for( int k = 0; k < this.alSommet.size(); k++ ){
+    					if( this.alSommet.get(j) == this.alLine.get(i).getSommet1() && this.alSommet.get(k) == this.alLine.get(i).getSommet2() ){
+    						if( this.alLine.get(i).getAlDirection().contains( this.alSommet.get(j) ) )	this.tabLiaisons[j][k] = true;
+    						if( this.alLine.get(i).getAlDirection().contains( this.alSommet.get(k) ) )	this.tabLiaisons[k][j] = true;
+    						//this.tabLiaisons[j][k] = true;
+    					}
+    				}
+    			}
+    		}
+			
+			for( int i = 0; i < this.tabLiaisons.length; i++ ){
+				for( int j = 0; j < this.tabLiaisons.length; j++ ){
+					if( j == this.tabLiaisons.length-1 ){
+						if( !this.tabLiaisons[i][j] ){	
+							p1.add("0");
+							p1.add(new Chunk("\n"));
+						}else{	
+							p1.add("1"); 
+							p1.add(new Chunk("\n"));
+						}
+					}
+					else{
+						if( !this.tabLiaisons[i][j] )	p1.add("0;");
+						else	p1.add("1;");
+					}
+				}
+			}
+            document.add(p1);
+            document.add(new Paragraph("Composant du graphe: ", new Font(Font.FontFamily.TIMES_ROMAN, 16, Font.BOLD)));
+            document.add(new Paragraph("Arrête: ", new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.BOLD)));
+            Paragraph p2 = new Paragraph("", new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.NORMAL));
+            p2.setLeading((float) 10.0);
+            for(Arrete a:this.alLine){
+            	p2.add(a.getNom()+" "+a.getSommet1().getNom()+" => "+ a.getSommet2().getNom()+"\n"); 
+            }
+            document.add(p2);
+            document.add(new Paragraph("Sommet: ", new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.BOLD)));
+            Paragraph p3 = new Paragraph("", new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.NORMAL));
+            p3.setLeading((float) 10.0);
+            for(Sommet a:this.alSommet){
+            	p3.add(a.getNom()+"\n"); 
+            }
+            document.add(p3);
             document.close();
 			
     	}
+        catch (FileNotFoundException e){
+        	JOptionPane.showMessageDialog(null, "Le fichier semble déjà utilisé dans un autre processus.\n (Pensez à fermer Adobe Acrobat Reader)", "Impossible d'exporter", JOptionPane.WARNING_MESSAGE);
+        }
 		catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -542,7 +623,7 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 		
 		this.instance = false;
 		
-		if( this.nbSommet > 0 ){
+		if( this.alSommet.size() > 0 ){
 			//Affichage de chacun des Sommets
 			for( int i = 0; i < this.alSommet.size(); i++ ){
 				this.g2.setPaint( this.alSommet.get(i).getColor() );
@@ -634,7 +715,6 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 		System.out.println("ez");
 		System.out.println("ioehozerg");
 	}
-	
 
 	public void actionPerformed(ActionEvent e) {
 		
@@ -653,5 +733,6 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 			for( int i = 0; i < this.selectedSommet.size(); i++ )
 				this.deleteSommet( this.selectedSommet.get(i) );
 		}
+		System.out.println("qzdqz");
 	}
 }

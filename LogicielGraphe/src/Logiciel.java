@@ -259,8 +259,10 @@ public class Logiciel extends JFrame implements ActionListener, KeyListener{
 		
 		//enregistrement du projet
 		if( e.getSource() == this.enregistrer ){
-				if (currentFile == null)
-					JOptionPane.showMessageDialog(null,"Aucun projet n'est encore ouvert");
+				if (currentFile == null){
+					JOptionPane.showMessageDialog(null, "Aucun projet n'est ouvert actuellement.", "Impossible d'enregristrer", JOptionPane.INFORMATION_MESSAGE);
+					return;
+				}
 				else
 					if (currentFile.getPath().equals("unregistred"))
 						this.enregistrerSous.doClick();
@@ -272,7 +274,7 @@ public class Logiciel extends JFrame implements ActionListener, KeyListener{
 		//Ouvre une fenetre de parcours de dossiers pour décider où enregistrer le projet courant
 		if( e.getSource() == this.enregistrerSous ){
 			if (currentFile == null)
-				JOptionPane.showMessageDialog(null,"Aucun projet n'est encore ouvert");
+				JOptionPane.showMessageDialog(null, "Aucun projet n'est ouvert actuellement.", "Impossible d'enregristrer", JOptionPane.INFORMATION_MESSAGE);
 			else {
 				JFileChooser enregistrerSous = new JFileChooser();
 				enregistrerSous.setCurrentDirectory( new File(".") );
