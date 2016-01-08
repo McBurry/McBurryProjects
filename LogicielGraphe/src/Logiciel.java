@@ -260,7 +260,7 @@ public class Logiciel extends JFrame implements ActionListener, KeyListener{
 				int resultatEnregistrer = enregistrerSous.showDialog(enregistrerSous, "Enregistrer");
 				if (resultatEnregistrer == JFileChooser.APPROVE_OPTION){
 					File chemin = enregistrerSous.getSelectedFile();
-					if (!chemin.getPath().contains(".png"))
+					if (!chemin.getPath().contains(".txt"))
 	    				chemin = new File(chemin.getPath() + ".txt");
 					
 					this.graphe.enregistrerSous( chemin );

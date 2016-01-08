@@ -3,6 +3,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -36,9 +37,12 @@ import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Image;
+import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfTemplate;
 import com.itextpdf.text.pdf.PdfWriter;
 
@@ -429,7 +433,7 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 	public void exportPdf() throws DocumentException{
 		String fileToSave = null;
         try{
-    		BufferedImage bufferedImage = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_RGB);
+    		BufferedImage bufferedImage = new BufferedImage(this.getWidth(),this.getHeight(), BufferedImage.TYPE_INT_RGB);
     		JFileChooser fileChooser = new JFileChooser();
     		fileChooser.setDialogTitle("Selectionnez l'emplacement du fichier à sauvergarder");
     		int userSelection = fileChooser.showSaveDialog(this);
@@ -438,22 +442,25 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
     			if (!fileToSave.contains(".pdf"))
     				fileToSave += ".pdf";
     		}
+    		
 			g2 = bufferedImage.createGraphics();
-	        Document document = new Document();
+	        Document document = new Document(PageSize.A4);
 	        PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(fileToSave));
-			g2 = bufferedImage.createGraphics();
 			paintAll(g2);
+			g2.dispose();
+			if (this.getWidth() > 500){
+    			bufferedImage =resizeImage(bufferedImage, BufferedImage.TYPE_INT_RGB, this.getWidth()-(bufferedImage.getWidth()-500),(int)((double)((double)(bufferedImage.getHeight())/((double)(1)+(((double)(bufferedImage.getWidth())-(double)(500)) / (double)(bufferedImage.getWidth()))))));
+			}
+    		if (this.getHeight() > 500)
+    			bufferedImage =resizeImage(bufferedImage, BufferedImage.TYPE_INT_RGB,(int)((double)((double)(bufferedImage.getWidth())/((double)(1)+(((double)(bufferedImage.getHeight())-(double)(500)) / (double)(bufferedImage.getHeight()))))),  bufferedImage.getHeight()-(bufferedImage.getHeight()-500) );
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			ImageIO.write(bufferedImage, "png", baos);
 			Image iTextImage = Image.getInstance(baos.toByteArray());
-			
+			iTextImage.setAlignment(Image.ALIGN_CENTER);
             document.addAuthor("Groupe 10 BTW");
             document.addTitle("Importation du graph "+ Logiciel.nomProjet);
             document.open();
-            Paragraph PImage = new Paragraph();
-            PImage.setAlignment(Element.ALIGN_CENTER);
-            PImage.add(iTextImage);
-            document.add(PImage);
+            document.add(iTextImage);
             document.close();
 			
     	}
@@ -462,6 +469,18 @@ public class Graphique extends JPanel implements ActionListener, MouseListener, 
 		}
 	}
 	
+    private static BufferedImage resizeImage(BufferedImage originalImage, int type, int height, int width){
+	BufferedImage resizedImage = new BufferedImage(height, width, type);
+	Graphics2D g = resizedImage.createGraphics();
+	g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+	g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+	g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+	g.drawImage(originalImage, 0, 0, height, width, null);
+	g.dispose();
+		
+	return resizedImage;
+    }
+    
 	public void paintComponent( Graphics g ){
 		this.g2 = (Graphics2D) g;
 		super.paintComponent(g);

@@ -32,7 +32,7 @@ public class FenetreNouveauProjet extends JFrame implements ActionListener{
 		this.cPanel = new JPanel( new GridLayout(1,2) );
 		this.group = new CheckboxGroup();
 		this.oui = new Checkbox("oui", this.group, false);
-		this.non = new Checkbox("non", this.group, false);
+		this.non = new Checkbox("non", this.group, true);
 		
 		this.ok = new JButton("Ok");
 		this.annuler = new JButton("Annuler");
