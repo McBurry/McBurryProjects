@@ -117,6 +117,7 @@ public class Arrete extends JPanel {
 	public Line2D getLine2D(){	return this.l;	}
 	public ArrayList<Polygon> getAlPolygon(){	return this.alPol;	}
 	public ArrayList<Sommet> getAlSommet(){	return this.alSommet;	}
+	public ArrayList<Sommet> getAlDirection(){	return this.direction;	}
 
 	public String getNom(){	return this.nom;	}
 	public int getX1() {	return x1;	}
