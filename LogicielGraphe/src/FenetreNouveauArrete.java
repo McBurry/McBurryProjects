@@ -1,3 +1,11 @@
+/**
+ * Classe permettant de créer une nouvelle arrete
+ * 
+ * @author Vallot Julien, Etancelin Pierre, Gourdain Loic, Florin kilian, Guelle Dylan
+ * @version 1.0
+ * 2016/01/07
+ * 
+ */
 import java.awt.Checkbox;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -28,6 +36,10 @@ public class FenetreNouveauArrete extends JFrame implements ActionListener, List
 	
 	private Sommet sUn, sDeux;
 	
+	/**
+	 * constructeur
+	 * @param graphe
+	 */
 	public FenetreNouveauArrete( Graphique graphe ){
 		setSize(350,200);
 		setTitle("Nouvelle Arrete");
@@ -68,6 +80,7 @@ public class FenetreNouveauArrete extends JFrame implements ActionListener, List
 		add( this.pCentre, "Center" );
 		
 		this.pBas = new JPanel();
+		//permet le choix pour la direction de la fleche vers un sommet 
 		if( this.graphe.getOriente() ){
 			this.pBas.setLayout( new GridLayout(2,2) );
 			this.orienteVers = new JLabel("Orientation vers : ");

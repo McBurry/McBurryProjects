@@ -1,3 +1,11 @@
+/**
+ * Classe créant un nouveau projet vierge
+ * 
+ * @author Vallot Julien, Etancelin Pierre, Gourdain Loic, Florin kilian, Guelle Dylan
+ * @version 1.0
+ * 2016/01/07
+ * 
+ */
 import java.awt.Checkbox;
 import java.awt.CheckboxGroup;
 import java.awt.GridLayout;
@@ -21,6 +29,10 @@ public class FenetreNouveauProjet extends JFrame implements ActionListener{
 	private CheckboxGroup group;
 	private JPanel cPanel;
 	
+	/**
+	 * constructeur
+	 * @param graphe
+	 */
 	public FenetreNouveauProjet( Graphique graphe ){
 		setLayout( new GridLayout(3,2) );
 		
